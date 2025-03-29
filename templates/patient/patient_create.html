@@ -14,8 +14,20 @@
             <button type="button" class="tab-btn active" data-tab="personal">
                 <i class="fas fa-address-card"></i> Información Personal
             </button>
+            <button type="button" class="tab-btn" data-tab="contact">
+                <i class="fas fa-phone"></i> Contacto
+            </button>
             <button type="button" class="tab-btn" data-tab="medical">
                 <i class="fas fa-notes-medical"></i> Información Médica
+            </button>
+            <button type="button" class="tab-btn" data-tab="anthropometric">
+                <i class="fas fa-weight"></i> Datos Antropométricos
+            </button>
+            <button type="button" class="tab-btn" data-tab="lifestyle">
+                <i class="fas fa-running"></i> Estilo de Vida
+            </button>
+            <button type="button" class="tab-btn" data-tab="specialist">
+                <i class="fas fa-user-md"></i> Especialidades
             </button>
         </div>
 
@@ -52,8 +64,61 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="telefono">Teléfono</label>
+                            <label for="estadoCivil">Estado Civil</label>
+                            <select id="estadoCivil" name="estadoCivil">
+                                <option value="" selected>Seleccionar</option>
+                                <option value="Soltero/a">Soltero/a</option>
+                                <option value="Casado/a">Casado/a</option>
+                                <option value="Divorciado/a">Divorciado/a</option>
+                                <option value="Viudo/a">Viudo/a</option>
+                                <option value="Unión libre">Unión libre</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nacionalidad">Nacionalidad</label>
+                            <input type="text" id="nacionalidad" name="nacionalidad" placeholder="País de origen">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ocupacion">Ocupación</label>
+                            <input type="text" id="ocupacion" name="ocupacion" placeholder="Ocupación actual">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nivelEducativo">Nivel Educativo</label>
+                            <select id="nivelEducativo" name="nivelEducativo">
+                                <option value="" selected>Seleccionar</option>
+                                <option value="Primaria">Primaria</option>
+                                <option value="Secundaria">Secundaria</option>
+                                <option value="Preparatoria">Preparatoria</option>
+                                <option value="Universidad">Universidad</option>
+                                <option value="Posgrado">Posgrado</option>
+                                <option value="Sin estudios">Sin estudios</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="tab-actions">
+                        <button type="button" class="btn btn-primary next-tab" data-next="contact">
+                            Siguiente <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Información de Contacto -->
+                <div class="tab-pane" id="tab-contact">
+                    <!-- Contenido del tab de contacto -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="telefono">Teléfono Principal</label>
                             <input type="tel" id="telefono" name="telefono" placeholder="Número de contacto">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefonoAlternativo">Teléfono Alternativo</label>
+                            <input type="tel" id="telefonoAlternativo" name="telefonoAlternativo"
+                                placeholder="Teléfono secundario">
                         </div>
 
                         <div class="form-group">
@@ -66,54 +131,96 @@
                             <textarea id="direccion" name="direccion" rows="3"
                                 placeholder="Dirección completa"></textarea>
                         </div>
+
+                        <div class="form-group">
+                            <label for="contactoEmergenciaNombre">Contacto de Emergencia (Nombre)</label>
+                            <input type="text" id="contactoEmergenciaNombre" name="contactoEmergenciaNombre"
+                                placeholder="Nombre del contacto">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactoEmergenciaTel">Contacto de Emergencia (Teléfono)</label>
+                            <input type="tel" id="contactoEmergenciaTel" name="contactoEmergenciaTel"
+                                placeholder="Teléfono de emergencia">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactoEmergenciaRelacion">Relación</label>
+                            <input type="text" id="contactoEmergenciaRelacion" name="contactoEmergenciaRelacion"
+                                placeholder="Ej: Padre, Esposo/a">
+                        </div>
                     </div>
 
                     <div class="tab-actions">
+                        <button type="button" class="btn btn-secondary prev-tab" data-prev="personal">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
                         <button type="button" class="btn btn-primary next-tab" data-next="medical">
                             Siguiente <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Tab 2: Información Médica -->
+                <!-- Tab 3: Información Médica -->
                 <div class="tab-pane" id="tab-medical">
+                    <!-- Contenido del tab médico -->
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="numeroSeguro">Número de Seguro</label>
-                            <input type="text" id="numeroSeguro" name="numeroSeguro"
-                                placeholder="Número de seguro médico">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="grupoSanguineo">Grupo Sanguíneo</label>
-                            <select id="grupoSanguineo" name="grupoSanguineo">
-                                <option value="" selected>Seleccionar</option>
-                                <option value="A+">A+</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B-">B-</option>
-                                <option value="AB+">AB+</option>
-                                <option value="AB-">AB-</option>
-                                <option value="O+">O+</option>
-                                <option value="O-">O-</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="alergias">Alergias</label>
-                            <textarea id="alergias" name="alergias" rows="3"
-                                placeholder="Indique alergias conocidas"></textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="notasMedicas">Notas Médicas</label>
-                            <textarea id="notasMedicas" name="notasMedicas" rows="4"
-                                placeholder="Antecedentes médicos relevantes, patologías crónicas, etc."></textarea>
-                        </div>
+                        <!-- Contenido médico aquí -->
                     </div>
 
                     <div class="tab-actions">
-                        <button type="button" class="btn btn-secondary prev-tab" data-prev="personal">
+                        <button type="button" class="btn btn-secondary prev-tab" data-prev="contact">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary next-tab" data-next="anthropometric">
+                            Siguiente <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Datos Antropométricos -->
+                <div class="tab-pane" id="tab-anthropometric">
+                    <!-- Contenido del tab antropométrico -->
+                    <div class="form-grid">
+                        <!-- Contenido antropométrico aquí -->
+                    </div>
+
+                    <div class="tab-actions">
+                        <button type="button" class="btn btn-secondary prev-tab" data-prev="medical">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary next-tab" data-next="lifestyle">
+                            Siguiente <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 5: Estilo de Vida -->
+                <div class="tab-pane" id="tab-lifestyle">
+                    <!-- Contenido del tab estilo de vida -->
+                    <div class="form-grid">
+                        <!-- Contenido de estilo de vida aquí -->
+                    </div>
+
+                    <div class="tab-actions">
+                        <button type="button" class="btn btn-secondary prev-tab" data-prev="anthropometric">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary next-tab" data-next="specialist">
+                            Siguiente <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 6: Especialidades -->
+                <div class="tab-pane" id="tab-specialist">
+                    <!-- Contenido del tab especialidades -->
+                    <div class="form-sections">
+                        <!-- Contenido de especialidades aquí -->
+                    </div>
+
+                    <div class="tab-actions">
+                        <button type="button" class="btn btn-secondary prev-tab" data-prev="lifestyle">
                             <i class="fas fa-arrow-left"></i> Anterior
                         </button>
                         <button type="submit" class="btn btn-success">
@@ -171,5 +278,26 @@
                 document.getElementById('tab-' + prevTab).classList.add('active');
             });
         });
+
+        // Cálculo automático del IMC cuando se ingresan peso y estatura
+        const pesoInput = document.getElementById('peso');
+        const estaturaInput = document.getElementById('estatura');
+        const imcInput = document.getElementById('imc');
+
+        function calcularIMC() {
+            if (pesoInput.value && estaturaInput.value) {
+                const peso = parseFloat(pesoInput.value);
+                const estatura = parseFloat(estaturaInput.value) / 100; // convertir cm a metros
+                if (peso > 0 && estatura > 0) {
+                    const imc = peso / (estatura * estatura);
+                    imcInput.value = imc.toFixed(2);
+                }
+            }
+        }
+
+        if (pesoInput && estaturaInput && imcInput) {
+            pesoInput.addEventListener('input', calcularIMC);
+            estaturaInput.addEventListener('input', calcularIMC);
+        }
     });
 </script>
