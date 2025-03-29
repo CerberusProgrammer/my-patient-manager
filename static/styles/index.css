@@ -1,15 +1,19 @@
 :root {
-    --primary-color: #0070F3;
-    --primary-dark: #0050B3;
-    --primary-light: #E1EFFE;
-    --success-color: #10B981;
-    --success-dark: #059669;
-    --warning-color: #F59E0B;
-    --warning-dark: #D97706;
-    --danger-color: #EF4444;
-    --danger-dark: #DC2626;
-    --dark-color: #111827;
-    --text-color: #1F2937;
+    --primary-color: #2C7FB8;
+    /* Medical blue */
+    --primary-dark: #226397;
+    --primary-light: #EBF5FF;
+    --success-color: #39A98E;
+    /* Soft teal */
+    --success-dark: #2A8970;
+    --warning-color: #F7A941;
+    /* Warm amber */
+    --warning-dark: #E09836;
+    --danger-color: #E35D6A;
+    /* Soft red */
+    --danger-dark: #D14A58;
+    --dark-color: #293445;
+    --text-color: #374151;
     --text-secondary: #6B7280;
     --background-color: #F9FAFB;
     --card-background: #FFFFFF;
@@ -45,7 +49,6 @@ header {
     padding: 16px 0;
     box-shadow: 0 1px 0 var(--border-color);
 }
-
 
 nav {
     display: flex;
@@ -116,12 +119,12 @@ h6 {
 }
 
 h1 {
-    font-size: 30px;
+    font-size: 28px;
     margin-bottom: 24px;
 }
 
 h2 {
-    font-size: 24px;
+    font-size: 22px;
     margin-bottom: 20px;
 }
 
@@ -134,4 +137,40 @@ p {
     margin-bottom: 16px;
     color: var(--text-secondary);
     line-height: 1.6;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 0.75rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.mb-5 {
+    margin-bottom: 1.25rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    padding: 24px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
 }

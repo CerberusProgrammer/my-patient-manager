@@ -2,15 +2,16 @@
 .btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     font-weight: 500;
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
-    padding: 9px 14px;
+    padding: 8px 14px;
     font-size: 14px;
     line-height: 1.5;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
+    border-radius: 6px;
+    transition: all 0.2s ease;
     text-decoration: none;
     border: none;
     letter-spacing: -0.2px;
@@ -61,8 +62,9 @@
 }
 
 .btn-sm {
-    padding: 6px 10px;
-    font-size: 13px;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
 }
 
 .btn i {
@@ -94,8 +96,44 @@
     transform: translateY(-1px);
 }
 
+.btn-icon {
+    padding: 6px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Table action buttons */
+.action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: var(--text-color);
+    background-color: transparent;
+}
+
+.view-btn:hover {
+    color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.edit-btn:hover {
+    color: var(--success-color);
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.delete-btn:hover {
+    color: var(--danger-color);
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
 .actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
 }

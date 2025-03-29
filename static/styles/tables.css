@@ -4,9 +4,10 @@ table {
     border-collapse: collapse;
     margin: 16px 0;
     background-color: var(--card-background);
-    box-shadow: var(--card-shadow);
     border-radius: var(--border-radius);
     overflow: hidden;
+    font-size: 14px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 table thead {
@@ -14,18 +15,21 @@ table thead {
 }
 
 th {
-    font-weight: 600;
+    font-weight: 500;
     text-align: left;
-    padding: 14px 16px;
-    color: var(--dark-color);
+    padding: 12px 16px;
+    color: var(--text-secondary);
     border-bottom: 1px solid var(--border-color);
-    font-size: 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 td {
     padding: 12px 16px;
     border-bottom: 1px solid var(--border-color);
-    font-size: 14px;
+    color: var(--text-color);
+    vertical-align: middle;
 }
 
 tr:last-child td {
@@ -33,14 +37,142 @@ tr:last-child td {
 }
 
 tr:hover td {
+    background-color: rgba(0, 112, 243, 0.02);
+}
+
+/* Sortable columns */
+.sortable {
+    cursor: pointer;
+    position: relative;
+    padding-right: 24px;
+    transition: color 0.2s ease;
+}
+
+.sortable:hover {
+    color: var(--primary-color);
+}
+
+.sortable i {
+    font-size: 10px;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Actions column */
+.actions-column {
+    width: 120px;
+    text-align: right;
+}
+
+.table-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-start;
+}
+
+/* Action buttons - more subtle and minimalist */
+.action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+    background-color: transparent;
+    font-size: 13px;
+}
+
+.view-btn:hover {
+    color: var(--primary-color);
     background-color: var(--primary-light);
 }
 
+.edit-btn:hover {
+    color: var(--success-color);
+    background-color: rgba(16, 185, 129, 0.05);
+}
 
-/* Search Box */
+.delete-btn:hover {
+    color: var(--danger-color);
+    background-color: rgba(239, 68, 68, 0.05);
+}
+
+/* Pagination - more refined */
+.table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: rgba(0, 0, 0, 0.01);
+    border-top: 1px solid var(--border-color);
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.page-info {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.page-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--card-background);
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-secondary);
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.page-btn:not(:disabled):hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.page-current {
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Search and filters - more polished */
+.search-filters {
+    padding: 16px 16px 0;
+}
+
+.search-container {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
 .search-box {
-    margin-bottom: 24px;
     position: relative;
+    flex: 1;
 }
 
 .search-box input {
@@ -50,11 +182,14 @@ tr:hover td {
     font-size: 14px;
     border-radius: var(--border-radius);
     height: 42px;
+    width: 100%;
     transition: var(--transition);
 }
 
 .search-box input:focus {
-    box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.15);
+    box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+    border-color: var(--primary-color);
+    outline: none;
 }
 
 .search-box::before {
@@ -66,4 +201,5 @@ tr:hover td {
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-secondary);
+    opacity: 0.6;
 }

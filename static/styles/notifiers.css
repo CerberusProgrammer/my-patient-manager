@@ -1,11 +1,11 @@
 /* Messages */
 .error-message {
-    color: var(--danger-color);
-    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-dark);
+    background-color: rgba(227, 93, 106, 0.08);
     border-left: 3px solid var(--danger-color);
     padding: 14px 16px;
     margin-bottom: 20px;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 14px;
     display: flex;
     align-items: flex-start;
@@ -14,15 +14,16 @@
 .error-message i {
     margin-right: 10px;
     margin-top: 2px;
+    color: var(--danger-color);
 }
 
 .warning-message {
     color: var(--warning-dark);
-    background-color: rgba(245, 158, 11, 0.1);
+    background-color: rgba(247, 169, 65, 0.08);
     border-left: 3px solid var(--warning-color);
     padding: 14px 16px;
     margin-bottom: 20px;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 14px;
     display: flex;
     align-items: flex-start;
@@ -31,29 +32,59 @@
 .warning-message i {
     margin-right: 10px;
     margin-top: 2px;
+    color: var(--warning-color);
+}
+
+.success-message {
+    color: var(--success-dark);
+    background-color: rgba(57, 169, 142, 0.08);
+    border-left: 3px solid var(--success-color);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.success-message i {
+    margin-right: 10px;
+    margin-top: 2px;
+    color: var(--success-color);
 }
 
 /* Badges */
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 8px;
+    padding: 2px 8px;
     font-size: 12px;
     font-weight: 500;
     border-radius: 4px;
+    line-height: 1.5;
 }
 
 .badge-warning {
-    background-color: rgba(245, 158, 11, 0.15);
+    background-color: rgba(247, 169, 65, 0.12);
     color: var(--warning-dark);
 }
 
 .badge-success {
-    background-color: rgba(16, 185, 129, 0.15);
+    background-color: rgba(57, 169, 142, 0.12);
     color: var(--success-dark);
 }
 
 .badge-danger {
-    background-color: rgba(239, 68, 68, 0.15);
+    background-color: rgba(227, 93, 106, 0.12);
     color: var(--danger-dark);
+}
+
+.badge-primary {
+    background-color: rgba(44, 127, 184, 0.12);
+    color: var(--primary-dark);
+}
+
+.badge i {
+    margin-right: 4px;
+    font-size: 10px;
 }
