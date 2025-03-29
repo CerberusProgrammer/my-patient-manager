@@ -13,9 +13,13 @@
             <div class="search-container">
                 <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" name="query" id="search-pacientes" placeholder="Buscar pacientes..."
-                        hx-get="/pacientes/filtrar" hx-trigger="keyup changed delay:300ms" hx-target="#pacientes-table"
+                    <!-- Modificamos el campo de búsqueda para usar un formulario y métodos POST -->
+                    <form id="search-form" hx-post="/pacientes/filtrar" hx-trigger="submit" hx-target="#pacientes-table"
                         hx-indicator="#search-indicator">
+                        <input type="text" name="query" id="search-pacientes" placeholder="Buscar pacientes..."
+                            autocomplete="off">
+                        <button type="submit" style="display:none">Buscar</button>
+                    </form>
                     <div id="search-indicator" class="search-indicator">
                         <i class="fas fa-circle-notch fa-spin"></i>
                     </div>
@@ -32,8 +36,7 @@
                 <div class="filter-grid">
                     <div class="filter-group">
                         <label for="filter-gender">Género</label>
-                        <select id="filter-gender" class="filter-control" hx-include="#search-pacientes"
-                            hx-get="/pacientes/filtrar" hx-trigger="change" hx-target="#pacientes-table">
+                        <select id="filter-gender" name="filter-gender" class="filter-control">
                             <option value="">Todos</option>
                             <option value="Masculino">Masculino</option>
                             <option value="Femenino">Femenino</option>
@@ -43,8 +46,7 @@
 
                     <div class="filter-group">
                         <label for="filter-blood">Grupo sanguíneo</label>
-                        <select id="filter-blood" class="filter-control" hx-include="#search-pacientes"
-                            hx-get="/pacientes/filtrar" hx-trigger="change" hx-target="#pacientes-table">
+                        <select id="filter-blood" name="filter-blood" class="filter-control">
                             <option value="">Todos</option>
                             <option value="A+">A+</option>
                             <option value="A-">A-</option>
@@ -55,6 +57,15 @@
                             <option value="O+">O+</option>
                             <option value="O-">O-</option>
                         </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="button" id="apply-filters" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Aplicar filtros
+                        </button>
+                        <button type="button" id="reset-filters" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> Reiniciar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -143,60 +154,7 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Toggle para filtros avanzados
-        const toggleFilters = document.getElementById('toggle-filters');
-        const advancedFilters = document.getElementById('advanced-filters');
-
-        if (toggleFilters && advancedFilters) {
-            toggleFilters.addEventListener('click', function () {
-                advancedFilters.classList.toggle('active');
-                const icon = toggleFilters.querySelector('.fa-chevron-down');
-                if (icon) {
-                    icon.classList.toggle('fa-chevron-down');
-                    icon.classList.toggle('fa-chevron-up');
-                }
-            });
-        }
-
-        // Ordenación de columnas
-        const sortableColumns = document.querySelectorAll('.sortable');
-        sortableColumns.forEach(column => {
-            column.addEventListener('click', function () {
-                const sort = this.dataset.sort;
-                const icon = this.querySelector('i');
-
-                // Resetear todos los iconos
-                document.querySelectorAll('.sortable i').forEach(i => {
-                    i.className = 'fas fa-sort';
-                });
-
-                // Determinar la dirección de ordenamiento
-                let direction = 'asc';
-                if (icon.classList.contains('fa-sort') || icon.classList.contains('fa-sort-down')) {
-                    icon.className = 'fas fa-sort-up';
-                    direction = 'asc';
-                } else {
-                    icon.className = 'fas fa-sort-down';
-                    direction = 'desc';
-                }
-
-                // Implementar la lógica de ordenamiento con HTMX
-                // (esto necesitará ajustes en el backend)
-                const tableContainer = document.getElementById('pacientes-table');
-                if (tableContainer) {
-                    tableContainer.setAttribute('hx-get', `/pacientes/filtrar?sort=${sort}&direction=${direction}`);
-                    tableContainer.setAttribute('hx-trigger', 'revealed');
-                    tableContainer.dispatchEvent(new Event('revealed'));
-                }
-            });
-        });
-    });
-</script>
-
 <style>
-    /* Estilos para la lista de pacientes */
     .patients-list {
         max-width: 1100px;
         margin: 0 auto;
@@ -253,6 +211,11 @@
         transform: translateY(-50%);
         color: #9ca3af;
         pointer-events: none;
+        z-index: 10;
+    }
+
+    #search-form {
+        width: 100%;
     }
 
     #search-pacientes {
@@ -281,7 +244,7 @@
         transition: opacity 0.2s;
     }
 
-    .search-indicator.htmx-request {
+    .htmx-request .search-indicator {
         opacity: 1;
     }
 
@@ -347,6 +310,13 @@
         border: 1px solid rgba(0, 0, 0, 0.1);
         background-color: #fff;
         font-family: inherit;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        grid-column: 1 / -1;
     }
 
     /* Tabla */
@@ -545,6 +515,17 @@
         font-weight: 500;
     }
 
+    .error-message {
+        padding: 16px;
+        margin: 16px;
+        background-color: #fee2e2;
+        border-radius: 8px;
+        color: #ef4444;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
         .search-container {
@@ -575,3 +556,159 @@
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Constantes para los elementos DOM principales
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-pacientes');
+        const toggleFilters = document.getElementById('toggle-filters');
+        const advancedFilters = document.getElementById('advanced-filters');
+        const genderFilter = document.getElementById('filter-gender');
+        const bloodFilter = document.getElementById('filter-blood');
+        const applyFilters = document.getElementById('apply-filters');
+        const resetFilters = document.getElementById('reset-filters');
+        const searchIndicator = document.getElementById('search-indicator');
+        const pacientesTable = document.getElementById('pacientes-table');
+
+        // Variable global para almacenar el estado de ordenación actual
+        let currentSort = {
+            column: 'id',
+            direction: 'asc'
+        };
+
+        // Toggle para filtros avanzados
+        if (toggleFilters && advancedFilters) {
+            toggleFilters.addEventListener('click', function () {
+                advancedFilters.classList.toggle('active');
+                const icon = toggleFilters.querySelector('.fa-chevron-down, .fa-chevron-up');
+                if (icon) {
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                }
+            });
+        }
+
+        // Realizar búsqueda cuando se escriba en el campo de búsqueda (con retraso)
+        if (searchInput) {
+            let searchTimeout;
+            searchInput.addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function () {
+                    performSearch();
+                }, 500);
+            });
+        }
+
+        // Manejar envío del formulario de búsqueda
+        if (searchForm) {
+            searchForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                performSearch();
+            });
+        }
+
+        // Aplicar filtros al hacer clic en el botón
+        if (applyFilters) {
+            applyFilters.addEventListener('click', function () {
+                performSearch();
+            });
+        }
+
+        // Reiniciar filtros
+        if (resetFilters) {
+            resetFilters.addEventListener('click', function () {
+                if (searchInput) searchInput.value = '';
+                if (genderFilter) genderFilter.value = '';
+                if (bloodFilter) bloodFilter.value = '';
+                performSearch();
+            });
+        }
+
+        // Función para realizar la búsqueda con todos los parámetros
+        function performSearch() {
+            // Mostrar indicador de carga
+            if (searchIndicator) searchIndicator.style.opacity = '1';
+
+            // Obtener valores de los filtros
+            const query = searchInput ? searchInput.value : '';
+            const gender = genderFilter ? genderFilter.value : '';
+            const blood = bloodFilter ? bloodFilter.value : '';
+
+            // Crear FormData para enviar los parámetros
+            const formData = new FormData();
+            formData.append('query', query);
+            formData.append('filter-gender', gender);
+            formData.append('filter-blood', blood);
+            formData.append('sort', currentSort.column);
+            formData.append('direction', currentSort.direction);
+
+            // Enviar solicitud POST para filtrar pacientes
+            fetch('/pacientes/filtrar', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'HX-Request': 'true'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la solicitud: ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    // Actualizar la tabla con la respuesta
+                    if (pacientesTable) {
+                        pacientesTable.innerHTML = html;
+                        // Reinicializar los eventos de ordenación
+                        initSortableColumns();
+                    }
+
+                    // Ocultar indicador de carga
+                    if (searchIndicator) searchIndicator.style.opacity = '0';
+                })
+                .catch(error => {
+                    console.error('Error en la búsqueda:', error);
+                    if (searchIndicator) searchIndicator.style.opacity = '0';
+                    alert('Error al filtrar pacientes. Intente nuevamente.');
+                });
+        }
+
+        // Función para inicializar los eventos de ordenación en las columnas
+        function initSortableColumns() {
+            const sortableColumns = document.querySelectorAll('.sortable');
+
+            sortableColumns.forEach(column => {
+                column.addEventListener('click', function () {
+                    const sort = this.dataset.sort;
+                    const currentIcon = this.querySelector('i');
+
+                    // Resetear todos los iconos
+                    document.querySelectorAll('.sortable i').forEach(i => {
+                        i.className = 'fas fa-sort';
+                    });
+
+                    // Determinar la dirección de ordenamiento
+                    let direction = 'asc';
+                    if (sort === currentSort.column && currentSort.direction === 'asc') {
+                        direction = 'desc';
+                        currentIcon.className = 'fas fa-sort-down';
+                    } else {
+                        currentIcon.className = 'fas fa-sort-up';
+                    }
+
+                    // Actualizar el estado global de ordenación
+                    currentSort.column = sort;
+                    currentSort.direction = direction;
+
+                    // Realizar la búsqueda con la nueva ordenación
+                    performSearch();
+                });
+            });
+        }
+
+        // Inicializar la ordenación al cargar la página
+        initSortableColumns();
+    });
+</script>

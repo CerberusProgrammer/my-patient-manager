@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -285,19 +286,45 @@ func PacienteDeleteHandler(c *fiber.Ctx) error {
 
 // PacientesFilterHandler maneja el filtrado de pacientes
 func PacientesFilterHandler(c *fiber.Ctx) error {
-	query := c.Query("query")
-	gender := c.Query("filter-gender")
-	blood := c.Query("filter-blood")
-	sort := c.Query("sort")
-	direction := c.Query("direction")
+	// Obtener los parámetros de filtrado
+	var query, gender, blood, sort, direction string
+
+	// Obtener los parámetros según el método HTTP
+	if c.Method() == "POST" {
+		query = c.FormValue("query")
+		gender = c.FormValue("filter-gender")
+		blood = c.FormValue("filter-blood")
+		sort = c.FormValue("sort")
+		direction = c.FormValue("direction")
+	} else {
+		query = c.Query("query")
+		gender = c.Query("filter-gender")
+		blood = c.Query("filter-blood")
+		sort = c.Query("sort")
+		direction = c.Query("direction")
+	}
+
+	// Limpiar espacios en blanco
+	query = strings.TrimSpace(query)
+	gender = strings.TrimSpace(gender)
+	blood = strings.TrimSpace(blood)
+	sort = strings.TrimSpace(sort)
+	direction = strings.TrimSpace(direction)
+
+	// Mostrar los parámetros recibidos en el log para depuración
+	fmt.Printf("Filtro - Query: '%s', Género: '%s', Sangre: '%s', Sort: '%s', Dir: '%s'\n",
+		query, gender, blood, sort, direction)
 
 	// Crear query base
 	db := DB.Model(&Paciente{})
 
 	// Aplicar filtros de búsqueda general
 	if query != "" {
-		db = db.Where("nombre ILIKE ? OR apellido ILIKE ? OR email ILIKE ?",
-			"%"+query+"%", "%"+query+"%", "%"+query+"%")
+		searchTerm := "%" + strings.ToLower(query) + "%"
+		db = db.Where(
+			"LOWER(nombre) LIKE ? OR LOWER(apellido) LIKE ? OR LOWER(email) LIKE ? OR CAST(id AS TEXT) LIKE ?",
+			searchTerm, searchTerm, searchTerm, searchTerm,
+		)
 	}
 
 	// Aplicar filtros específicos
@@ -309,44 +336,64 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		db = db.Where("grupo_sanguineo = ?", blood)
 	}
 
+	// Validar columnas ordenables
+	validColumns := map[string]bool{
+		"id":       true,
+		"nombre":   true,
+		"apellido": true,
+		"email":    true,
+		"telefono": true,
+	}
+
 	// Aplicar ordenación
-	if sort != "" {
+	if sort != "" && validColumns[sort] {
 		orderStr := sort
 		if direction == "desc" {
 			orderStr += " DESC"
+		} else {
+			orderStr += " ASC"
 		}
 		db = db.Order(orderStr)
 	} else {
 		// Ordenación por defecto
-		db = db.Order("id")
+		db = db.Order("id ASC")
+		sort = "id"
+		direction = "asc"
 	}
 
 	// Ejecutar consulta
 	var pacientes []Paciente
 	result := db.Find(&pacientes)
 
+	fmt.Printf("Consulta completada: %d resultados encontrados\n", len(pacientes))
+
 	if result.Error != nil {
+		fmt.Printf("ERROR: %s\n", result.Error.Error())
 		if c.Get("HX-Request") == "true" {
 			return c.Status(fiber.StatusInternalServerError).Render("patient/patients_filter", fiber.Map{
-				"Error": "Error al filtrar pacientes: " + result.Error.Error(),
-			})
+				"Error":     "Error al filtrar pacientes: " + result.Error.Error(),
+				"Pacientes": []Paciente{},
+			}, "")
 		}
 		return c.Status(fiber.StatusInternalServerError).Render("patient/patients_view", fiber.Map{
-			"Title": "Lista de Pacientes",
-			"Error": "Error al filtrar pacientes: " + result.Error.Error(),
-		})
+			"Title":     "Lista de Pacientes",
+			"Error":     "Error al filtrar pacientes: " + result.Error.Error(),
+			"Pacientes": []Paciente{},
+		}, "")
 	}
 
 	// Para solicitudes HTMX, devolvemos solo la tabla parcial
 	if c.Get("HX-Request") == "true" {
 		return c.Render("patient/patients_filter", fiber.Map{
-			"Pacientes": pacientes,
-		})
+			"Pacientes":     pacientes,
+			"SortColumn":    sort,
+			"SortDirection": direction,
+		}, "")
 	}
 
 	// Para solicitudes normales, devolvemos la página completa
 	return c.Render("patient/patients_view", fiber.Map{
 		"Title":     "Búsqueda de Pacientes",
 		"Pacientes": pacientes,
-	})
+	}, "")
 }

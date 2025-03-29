@@ -1,37 +1,75 @@
-{{if not .Pacientes}}
-<tr>
-    <td colspan="6" class="text-center empty-table">
-        <div class="empty-state">
-            <i class="fas fa-search"></i>
-            <h3>No se encontraron resultados</h3>
-            <p>Intente con otros criterios de búsqueda</p>
-            <a href="/pacientes" class="btn btn-secondary">
-                <i class="fas fa-list"></i> Ver todos los pacientes
-            </a>
+<table>
+    <thead>
+        <tr>
+            <th class="sortable" data-sort="id">
+                ID <i class="fas fa-sort{{if eq .SortColumn " id"}}{{if eq .SortDirection "asc"
+                    }}-up{{else}}-down{{end}}{{end}}"></i>
+            </th>
+            <th class="sortable" data-sort="nombre">
+                Nombre <i class="fas fa-sort{{if eq .SortColumn " nombre"}}{{if eq .SortDirection "asc"
+                    }}-up{{else}}-down{{end}}{{end}}"></i>
+            </th>
+            <th class="sortable" data-sort="apellido">
+                Apellido <i class="fas fa-sort{{if eq .SortColumn " apellido"}}{{if eq .SortDirection "asc"
+                    }}-up{{else}}-down{{end}}{{end}}"></i>
+            </th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th class="actions-column">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{if not .Pacientes}}
+        <tr>
+            <td colspan="6" class="text-center empty-table">
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No se encontraron resultados</h3>
+                    <p>Intente con otros criterios de búsqueda</p>
+                    <a href="/pacientes" class="btn btn-secondary">
+                        <i class="fas fa-list"></i> Ver todos los pacientes
+                    </a>
+                </div>
+            </td>
+        </tr>
+        {{else}}
+        {{range .Pacientes}}
+        <tr>
+            <td>{{.ID}}</td>
+            <td>{{.Nombre}}</td>
+            <td>{{.Apellido}}</td>
+            <td>{{if .Telefono}}{{.Telefono}}{{else}}<span class="text-muted">No registrado</span>{{end}}</td>
+            <td>{{if .Email}}{{.Email}}{{else}}<span class="text-muted">No registrado</span>{{end}}</td>
+            <td class="actions-cell">
+                <div class="table-actions">
+                    <a href="/pacientes/{{.ID}}" class="action-btn view-btn" title="Ver detalles">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="/pacientes/{{.ID}}/editar" class="action-btn edit-btn" title="Editar paciente">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="/pacientes/{{.ID}}/eliminar" class="action-btn delete-btn" title="Eliminar paciente">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+        {{end}}
+        {{end}}
+    </tbody>
+</table>
+
+<div class="table-footer">
+    <div class="pagination">
+        <span class="page-info">Mostrando {{len .Pacientes}} pacientes</span>
+        <div class="page-controls">
+            <button class="page-btn" disabled>
+                <i class="fas fa-angle-left"></i>
+            </button>
+            <span class="page-current">1</span>
+            <button class="page-btn" disabled>
+                <i class="fas fa-angle-right"></i>
+            </button>
         </div>
-    </td>
-</tr>
-{{else}}
-{{range .Pacientes}}
-<tr>
-    <td>{{.ID}}</td>
-    <td>{{.Nombre}}</td>
-    <td>{{.Apellido}}</td>
-    <td>{{if .Telefono}}{{.Telefono}}{{else}}<span class="text-muted">No registrado</span>{{end}}</td>
-    <td>{{if .Email}}{{.Email}}{{else}}<span class="text-muted">No registrado</span>{{end}}</td>
-    <td class="actions-cell">
-        <div class="table-actions">
-            <a href="/pacientes/{{.ID}}" class="action-btn view-btn" title="Ver detalles">
-                <i class="fas fa-eye"></i>
-            </a>
-            <a href="/pacientes/{{.ID}}/editar" class="action-btn edit-btn" title="Editar paciente">
-                <i class="fas fa-edit"></i>
-            </a>
-            <a href="/pacientes/{{.ID}}/eliminar" class="action-btn delete-btn" title="Eliminar paciente">
-                <i class="fas fa-trash"></i>
-            </a>
-        </div>
-    </td>
-</tr>
-{{end}}
-{{end}}
+    </div>
+</div>
