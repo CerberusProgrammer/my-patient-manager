@@ -1,0 +1,59 @@
+/* Messages */
+.error-message {
+    color: var(--danger-color);
+    background-color: rgba(239, 68, 68, 0.1);
+    border-left: 3px solid var(--danger-color);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.error-message i {
+    margin-right: 10px;
+    margin-top: 2px;
+}
+
+.warning-message {
+    color: var(--warning-dark);
+    background-color: rgba(245, 158, 11, 0.1);
+    border-left: 3px solid var(--warning-color);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.warning-message i {
+    margin-right: 10px;
+    margin-top: 2px;
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 4px;
+}
+
+.badge-warning {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: var(--warning-dark);
+}
+
+.badge-success {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--success-dark);
+}
+
+.badge-danger {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--danger-dark);
+}
