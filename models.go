@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -55,6 +56,10 @@ func InicializarDB() {
 		panic("Error al conectar a la base de datos: " + err.Error())
 	}
 
+	// Log para verificar conexión
+	log.Println("Conectado correctamente a la base de datos")
+
 	// Migración automática de modelos
 	DB.AutoMigrate(&Paciente{}, &Cita{})
+	log.Println("Migración de modelos completada")
 }

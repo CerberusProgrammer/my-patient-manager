@@ -1,0 +1,42 @@
+<div class="patient-form">
+    <div class="patient-header mb-3">
+        <h2><i class="fas fa-user-minus"></i> Eliminar Paciente</h2>
+    </div>
+
+    <div class="warning-message mb-4">
+        <p><i class="fas fa-exclamation-triangle"></i> ¿Está seguro de que desea eliminar el siguiente paciente y todas
+            sus citas asociadas?</p>
+        <p>Esta acción no se puede deshacer.</p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="patient-info">
+            <h3>{{.Paciente.Nombre}} {{.Paciente.Apellido}}</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>ID:</strong>
+                    <span>{{.Paciente.ID}}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Teléfono:</strong>
+                    <span>{{.Paciente.Telefono}}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Email:</strong>
+                    <span>{{.Paciente.Email}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions text-center">
+        <form action="/pacientes/{{.Paciente.ID}}/eliminar" method="post">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Confirmar Eliminación
+            </button>
+            <a href="/pacientes/{{.Paciente.ID}}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>

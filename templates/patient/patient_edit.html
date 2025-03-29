@@ -1,0 +1,424 @@
+<div class="patient-form">
+    <div class="patient-header">
+        <h2><i class="fas fa-user-edit"></i> Editar Paciente</h2>
+    </div>
+
+    {{if .Error}}
+    <div class="error-message">
+        <i class="fas fa-exclamation-circle"></i> {{.Error}}
+    </div>
+    {{end}}
+
+    <div class="form-tabs">
+        <div class="tab-header">
+            <button type="button" class="tab-btn active" data-tab="personal">
+                <i class="fas fa-address-card"></i> Información Personal
+            </button>
+            <button type="button" class="tab-btn" data-tab="medical">
+                <i class="fas fa-notes-medical"></i> Información Médica
+            </button>
+        </div>
+
+        <form action="/pacientes/{{.Paciente.ID}}/editar" method="post">
+            <div class="tab-content">
+                <!-- Tab 1: Información Personal -->
+                <div class="tab-pane active" id="tab-personal">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nombre">Nombre*</label>
+                            <input type="text" id="nombre" name="nombre" value="{{.Paciente.Nombre}}" required
+                                autofocus>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="apellido">Apellido*</label>
+                            <input type="text" id="apellido" name="apellido" value="{{.Paciente.Apellido}}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                            <input type="date" id="fechaNacimiento" name="fechaNacimiento"
+                                value="{{.Paciente.FechaNacimiento.Format " 2006-01-02"}}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="genero">Género</label>
+                            <select id="genero" name="genero">
+                                <option value="" {{if eq .Paciente.Genero "" }}selected{{end}}>Seleccionar</option>
+                                <option value="Masculino" {{if eq .Paciente.Genero "Masculino" }}selected{{end}}>
+                                    Masculino</option>
+                                <option value="Femenino" {{if eq .Paciente.Genero "Femenino" }}selected{{end}}>Femenino
+                                </option>
+                                <option value="Otro" {{if eq .Paciente.Genero "Otro" }}selected{{end}}>Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefono">Teléfono</label>
+                            <input type="tel" id="telefono" name="telefono" value="{{.Paciente.Telefono}}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="{{.Paciente.Email}}">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="direccion">Dirección</label>
+                            <textarea id="direccion" name="direccion" rows="3">{{.Paciente.Direccion}}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="tab-actions">
+                        <button type="button" class="btn btn-primary next-tab" data-next="medical">
+                            Siguiente <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Información Médica -->
+                <div class="tab-pane" id="tab-medical">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="numeroSeguro">Número de Seguro</label>
+                            <input type="text" id="numeroSeguro" name="numeroSeguro" value="{{.Paciente.NumeroSeguro}}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="grupoSanguineo">Grupo Sanguíneo</label>
+                            <select id="grupoSanguineo" name="grupoSanguineo">
+                                <option value="" {{if eq .Paciente.GrupoSanguineo "" }}selected{{end}}>Seleccionar
+                                </option>
+                                <option value="A+" {{if eq .Paciente.GrupoSanguineo "A+" }}selected{{end}}>A+</option>
+                                <option value="A-" {{if eq .Paciente.GrupoSanguineo "A-" }}selected{{end}}>A-</option>
+                                <option value="B+" {{if eq .Paciente.GrupoSanguineo "B+" }}selected{{end}}>B+</option>
+                                <option value="B-" {{if eq .Paciente.GrupoSanguineo "B-" }}selected{{end}}>B-</option>
+                                <option value="AB+" {{if eq .Paciente.GrupoSanguineo "AB+" }}selected{{end}}>AB+
+                                </option>
+                                <option value="AB-" {{if eq .Paciente.GrupoSanguineo "AB-" }}selected{{end}}>AB-
+                                </option>
+                                <option value="O+" {{if eq .Paciente.GrupoSanguineo "O+" }}selected{{end}}>O+</option>
+                                <option value="O-" {{if eq .Paciente.GrupoSanguineo "O-" }}selected{{end}}>O-</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="alergias">Alergias</label>
+                            <textarea id="alergias" name="alergias" rows="3">{{.Paciente.Alergias}}</textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="notasMedicas">Notas Médicas</label>
+                            <textarea id="notasMedicas" name="notasMedicas"
+                                rows="4">{{.Paciente.NotasMedicas}}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="tab-actions">
+                        <button type="button" class="btn btn-secondary prev-tab" data-prev="personal">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Selector de tabs
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const tabId = this.getAttribute('data-tab');
+
+                // Desactivar todos los tabs y contenidos
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
+
+                // Activar el tab seleccionado
+                this.classList.add('active');
+                document.getElementById('tab-' + tabId).classList.add('active');
+            });
+        });
+
+        // Navegación de tabs con botones siguiente/anterior
+        const nextBtns = document.querySelectorAll('.next-tab');
+        const prevBtns = document.querySelectorAll('.prev-tab');
+
+        nextBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const nextTab = this.getAttribute('data-next');
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
+
+                document.querySelector(`[data-tab="${nextTab}"]`).classList.add('active');
+                document.getElementById('tab-' + nextTab).classList.add('active');
+            });
+        });
+
+        prevBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const prevTab = this.getAttribute('data-prev');
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
+
+                document.querySelector(`[data-tab="${prevTab}"]`).classList.add('active');
+                document.getElementById('tab-' + prevTab).classList.add('active');
+            });
+        });
+    });
+</script>
+
+<style>
+    :root {
+        --card-background: #ffffff;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        --border-radius: 12px;
+        --primary-color: #2c7fb8;
+        --text-secondary: #6b7280;
+        --dark-color: #1f2937;
+        --transition: all 0.2s ease-in-out;
+        --success-color: #10b981;
+        --secondary-color: #6b7280;
+    }
+
+    .patient-form {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: var(--card-background);
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+    }
+
+    .patient-header {
+        padding: 24px 32px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .patient-header h2 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-tabs {
+        padding: 0;
+    }
+
+    .tab-header {
+        display: flex;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .tab-btn {
+        padding: 16px 24px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        color: var(--text-secondary);
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition);
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+        border-bottom: 2px solid transparent;
+        font-family: inherit;
+        outline: none;
+    }
+
+    .tab-btn:hover {
+        color: var(--primary-color);
+        background-color: rgba(0, 0, 0, 0.01);
+    }
+
+    .tab-btn.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+    }
+
+    .tab-content {
+        padding: 32px;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--dark-color);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        font-size: 15px;
+        transition: var(--transition);
+        resize: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(44, 127, 184, 0.15);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: #9ca3af;
+    }
+
+    .tab-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 32px;
+    }
+
+    .tab-actions button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: inherit;
+        font-size: 15px;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #1a6ca2;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #4b5563;
+        transform: translateY(-2px);
+    }
+
+    .btn-success {
+        background-color: var(--success-color);
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #0d9668;
+        transform: translateY(-2px);
+    }
+
+    .error-message {
+        padding: 16px;
+        background-color: #fee2e2;
+        border-radius: 8px;
+        color: #ef4444;
+        margin: 0 32px;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .tab-header {
+            flex-direction: column;
+        }
+
+        .tab-btn {
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .tab-actions {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tab-actions button {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tab-content {
+            padding: 20px;
+        }
+
+        .patient-header {
+            padding: 16px 20px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+        }
+    }
+</style>

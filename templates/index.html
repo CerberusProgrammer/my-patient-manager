@@ -1,0 +1,319 @@
+<div class="welcome-container">
+    <div class="welcome-hero">
+        <div class="welcome-icon">
+            <i class="fas fa-heartbeat"></i>
+        </div>
+        <h1>MedCare Pro</h1>
+        <p class="welcome-subtitle">Sistema inteligente de gestión para profesionales de la salud</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card patients-card">
+            <div class="card-icon">
+                <i class="fas fa-user-group"></i>
+            </div>
+            <div class="card-content">
+                <h3>Pacientes</h3>
+                <p>Gestione historiales clínicos, datos personales y seguimiento médico de manera eficiente.</p>
+                <div class="card-actions">
+                    <a href="/pacientes" class="btn btn-primary">
+                        <i class="fas fa-list"></i>
+                        Ver todos
+                    </a>
+                    <a href="/pacientes/crear" class="btn btn-outline">
+                        <i class="fas fa-plus"></i>
+                        Nuevo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card appointments-card">
+            <div class="card-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="card-content">
+                <h3>Citas</h3>
+                <p>Organice su agenda médica, programe consultas y realice un seguimiento eficaz de las visitas.</p>
+                <div class="card-actions">
+                    <a href="/citas" class="btn btn-primary">
+                        <i class="fas fa-list"></i>
+                        Ver todas
+                    </a>
+                    <a href="/citas/crear" class="btn btn-outline">
+                        <i class="fas fa-plus"></i>
+                        Nueva
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card stats-card">
+            <div class="card-icon">
+                <i class="fas fa-chart-simple"></i>
+            </div>
+            <div class="card-content">
+                <h3>Estadísticas</h3>
+                <p>Visualice datos importantes de su consulta para tomar decisiones informadas.</p>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-value">{{.TotalPacientes}}</span>
+                        <span class="stat-label">Pacientes</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{.CitasHoy}}</span>
+                        <span class="stat-label">Citas hoy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card quick-card">
+            <div class="card-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="card-content">
+                <h3>Acciones rápidas</h3>
+                <div class="quick-actions">
+                    <a href="/pacientes/crear" class="quick-action-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Nuevo paciente</span>
+                    </a>
+                    <a href="/citas/crear" class="quick-action-btn">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Nueva cita</span>
+                    </a>
+                    <a href="/pacientes" class="quick-action-btn">
+                        <i class="fas fa-search"></i>
+                        <span>Buscar paciente</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .welcome-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .welcome-hero {
+        text-align: center;
+        margin-bottom: 48px;
+        padding: 40px 20px;
+    }
+
+    .welcome-icon {
+        font-size: 48px;
+        color: var(--primary-color);
+        background-color: var(--primary-light);
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+    }
+
+    .welcome-hero h1 {
+        font-size: 36px;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
+    }
+
+    .welcome-subtitle {
+        font-size: 18px;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto auto;
+        gap: 24px;
+    }
+
+    .dashboard-card {
+        background-color: var(--card-background);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+        display: flex;
+        position: relative;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-icon {
+        width: 75px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: var(--primary-color);
+    }
+
+    .card-content {
+        flex: 1;
+        padding: 24px;
+        padding-left: 0;
+    }
+
+    .card-content h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: var(--dark-color);
+    }
+
+    .card-content p {
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-outline {
+        background-color: transparent;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        display: inline-block;
+        font-weight: 500;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        padding: 10px 14px;
+        font-size: 14px;
+        line-height: 1.5;
+        border-radius: 8px;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .btn-outline:hover {
+        background-color: rgba(0, 122, 255, 0.1);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(0, 0, 0, 0.02);
+        padding: 16px;
+        border-radius: 10px;
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .stat-item:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .stat-value {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .quick-action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-radius: 10px;
+        padding: 16px 10px;
+        transition: var(--transition);
+        text-decoration: none;
+        color: var(--dark-color);
+    }
+
+    .quick-action-btn:hover {
+        background-color: var(--primary-light);
+        transform: translateY(-2px);
+        color: var(--primary-color);
+    }
+
+    .quick-action-btn i {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+
+    .quick-action-btn span {
+        font-size: 13px;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .welcome-icon {
+            width: 80px;
+            height: 80px;
+            font-size: 32px;
+        }
+
+        .welcome-hero h1 {
+            font-size: 28px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .card-icon {
+            width: 60px;
+            font-size: 24px;
+        }
+
+        .quick-actions {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .card-actions {
+            flex-direction: column;
+        }
+
+        .btn,
+        .btn-outline {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>

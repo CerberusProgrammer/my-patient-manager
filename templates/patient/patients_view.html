@@ -1,0 +1,577 @@
+<div class="patients-list">
+    <div class="dashboard-header">
+        <h2><i class="fas fa-user-group"></i> Pacientes</h2>
+        <div class="actions">
+            <a href="/pacientes/crear" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nuevo Paciente
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="search-filters">
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" name="query" id="search-pacientes" placeholder="Buscar pacientes..."
+                        hx-get="/pacientes/filtrar" hx-trigger="keyup changed delay:300ms" hx-target="#pacientes-table"
+                        hx-indicator="#search-indicator">
+                    <div id="search-indicator" class="search-indicator">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                    </div>
+                </div>
+
+                <div class="filter-options">
+                    <button type="button" id="toggle-filters" class="btn btn-filter">
+                        <i class="fas fa-filter"></i> Filtros <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="advanced-filters" class="advanced-filters">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="filter-gender">Género</label>
+                        <select id="filter-gender" class="filter-control" hx-include="#search-pacientes"
+                            hx-get="/pacientes/filtrar" hx-trigger="change" hx-target="#pacientes-table">
+                            <option value="">Todos</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-blood">Grupo sanguíneo</label>
+                        <select id="filter-blood" class="filter-control" hx-include="#search-pacientes"
+                            hx-get="/pacientes/filtrar" hx-trigger="change" hx-target="#pacientes-table">
+                            <option value="">Todos</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{if .Error}}
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i> {{.Error}}
+        </div>
+        {{end}}
+
+        <div id="pacientes-table" class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sortable" data-sort="id">
+                            ID <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="nombre">
+                            Nombre <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="apellido">
+                            Apellido <i class="fas fa-sort"></i>
+                        </th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th class="actions-column">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Pacientes}}
+                    <tr>
+                        <td>{{.ID}}</td>
+                        <td>{{.Nombre}}</td>
+                        <td>{{.Apellido}}</td>
+                        <td>{{if .Telefono}}{{.Telefono}}{{else}}<span class="text-muted">No registrado</span>{{end}}
+                        </td>
+                        <td>{{if .Email}}{{.Email}}{{else}}<span class="text-muted">No registrado</span>{{end}}</td>
+                        <td class="actions-cell">
+                            <div class="table-actions">
+                                <a href="/pacientes/{{.ID}}" class="action-btn view-btn" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/pacientes/{{.ID}}/editar" class="action-btn edit-btn" title="Editar paciente">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="/pacientes/{{.ID}}/eliminar" class="action-btn delete-btn"
+                                    title="Eliminar paciente">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr>
+                        <td colspan="6" class="text-center empty-table">
+                            <div class="empty-state">
+                                <i class="fas fa-user-slash"></i>
+                                <h3>No hay pacientes registrados</h3>
+                                <p>Empiece agregando un nuevo paciente</p>
+                                <a href="/pacientes/crear" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Nuevo Paciente
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+
+            <div class="table-footer">
+                <div class="pagination">
+                    <span class="page-info">Mostrando {{len .Pacientes}} pacientes</span>
+                    <div class="page-controls">
+                        <button class="page-btn" disabled>
+                            <i class="fas fa-angle-left"></i>
+                        </button>
+                        <span class="page-current">1</span>
+                        <button class="page-btn" disabled>
+                            <i class="fas fa-angle-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Toggle para filtros avanzados
+        const toggleFilters = document.getElementById('toggle-filters');
+        const advancedFilters = document.getElementById('advanced-filters');
+
+        if (toggleFilters && advancedFilters) {
+            toggleFilters.addEventListener('click', function () {
+                advancedFilters.classList.toggle('active');
+                const icon = toggleFilters.querySelector('.fa-chevron-down');
+                if (icon) {
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                }
+            });
+        }
+
+        // Ordenación de columnas
+        const sortableColumns = document.querySelectorAll('.sortable');
+        sortableColumns.forEach(column => {
+            column.addEventListener('click', function () {
+                const sort = this.dataset.sort;
+                const icon = this.querySelector('i');
+
+                // Resetear todos los iconos
+                document.querySelectorAll('.sortable i').forEach(i => {
+                    i.className = 'fas fa-sort';
+                });
+
+                // Determinar la dirección de ordenamiento
+                let direction = 'asc';
+                if (icon.classList.contains('fa-sort') || icon.classList.contains('fa-sort-down')) {
+                    icon.className = 'fas fa-sort-up';
+                    direction = 'asc';
+                } else {
+                    icon.className = 'fas fa-sort-down';
+                    direction = 'desc';
+                }
+
+                // Implementar la lógica de ordenamiento con HTMX
+                // (esto necesitará ajustes en el backend)
+                const tableContainer = document.getElementById('pacientes-table');
+                if (tableContainer) {
+                    tableContainer.setAttribute('hx-get', `/pacientes/filtrar?sort=${sort}&direction=${direction}`);
+                    tableContainer.setAttribute('hx-trigger', 'revealed');
+                    tableContainer.dispatchEvent(new Event('revealed'));
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Estilos para la lista de pacientes */
+    .patients-list {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .dashboard-header h2 {
+        font-size: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+    }
+
+    .card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    /* Search y filtros */
+    .search-filters {
+        padding: 1.25rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        background-color: rgba(0, 0, 0, 0.01);
+    }
+
+    .search-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .search-box {
+        flex: 1;
+        position: relative;
+        min-width: 200px;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        pointer-events: none;
+    }
+
+    #search-pacientes {
+        width: 100%;
+        padding: 0.75rem 2.5rem;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    #search-pacientes:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(44, 127, 184, 0.15);
+    }
+
+    .search-indicator {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-color);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .search-indicator.htmx-request {
+        opacity: 1;
+    }
+
+    .filter-options {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-filter {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.03);
+        color: #4b5563;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-filter:hover {
+        background-color: rgba(0, 0, 0, 0.06);
+    }
+
+    .advanced-filters {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        margin-top: 0;
+    }
+
+    .advanced-filters.active {
+        max-height: 300px;
+        margin-top: 1rem;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-radius: 8px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-group label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #4b5563;
+    }
+
+    .filter-control {
+        padding: 0.625rem;
+        border-radius: 6px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        font-family: inherit;
+    }
+
+    /* Tabla */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background-color: rgba(0, 0, 0, 0.02);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    th {
+        font-weight: 600;
+        text-align: left;
+        padding: 1rem;
+        color: #374151;
+        font-size: 0.875rem;
+        white-space: nowrap;
+    }
+
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+    }
+
+    .sortable:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .sortable i {
+        margin-left: 0.25rem;
+        font-size: 0.75rem;
+        opacity: 0.6;
+    }
+
+    td {
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        color: #1f2937;
+        font-size: 0.95rem;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover td {
+        background-color: rgba(0, 0, 0, 0.01);
+    }
+
+    .text-muted {
+        color: #9ca3af;
+        font-style: italic;
+    }
+
+    .actions-column {
+        text-align: right;
+        width: 120px;
+    }
+
+    .actions-cell {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .table-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.25rem;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+        color: #1f2937;
+    }
+
+    .view-btn:hover {
+        background-color: rgba(44, 127, 184, 0.1);
+        color: var(--primary-color);
+    }
+
+    .edit-btn:hover {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .delete-btn:hover {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    /* Estado vacío */
+    .empty-table {
+        padding: 3rem 1rem !important;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        color: #9ca3af;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        color: #4b5563;
+    }
+
+    .empty-state p {
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Footer de tabla */
+    .table-footer {
+        padding: 1rem;
+        background-color: rgba(0, 0, 0, 0.01);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .page-info {
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+
+    .page-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .page-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        color: #4b5563;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .page-btn:not(:disabled):hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .page-current {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .search-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-box {
+            width: 100%;
+        }
+
+        .filter-options {
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        th:nth-child(4),
+        td:nth-child(4),
+        th:nth-child(5),
+        td:nth-child(5) {
+            display: none;
+        }
+
+        .pagination {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+    }
+</style>

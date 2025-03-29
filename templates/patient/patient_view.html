@@ -1,0 +1,117 @@
+<div class="patient-details">
+    <div class="patient-header">
+        <h2><i class="fas fa-user"></i> {{.Paciente.Nombre}} {{.Paciente.Apellido}}</h2>
+        <div class="actions">
+            <a href="/pacientes/{{.Paciente.ID}}/editar" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+            <a href="/pacientes/{{.Paciente.ID}}/eliminar" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Eliminar
+            </a>
+            <a href="/pacientes" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <h3 class="mb-3"><i class="fas fa-address-card"></i> Información Personal</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>ID de Paciente</strong>
+                <span>{{.Paciente.ID}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Fecha de Nacimiento</strong>
+                <span>{{.Paciente.FechaNacimiento.Format "02/01/2006"}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Género</strong>
+                <span>{{if .Paciente.Genero}}{{.Paciente.Genero}}{{else}}No especificado{{end}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Teléfono</strong>
+                <span>{{if .Paciente.Telefono}}{{.Paciente.Telefono}}{{else}}No registrado{{end}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Email</strong>
+                <span>{{if .Paciente.Email}}{{.Paciente.Email}}{{else}}No registrado{{end}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Dirección</strong>
+                <span>{{if .Paciente.Direccion}}{{.Paciente.Direccion}}{{else}}No registrada{{end}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <h3 class="mb-3"><i class="fas fa-notes-medical"></i> Información Médica</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>Número de Seguro</strong>
+                <span>{{if .Paciente.NumeroSeguro}}{{.Paciente.NumeroSeguro}}{{else}}No registrado{{end}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Grupo Sanguíneo</strong>
+                <span>{{if .Paciente.GrupoSanguineo}}{{.Paciente.GrupoSanguineo}}{{else}}No registrado{{end}}</span>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h4><i class="fas fa-allergies"></i> Alergias</h4>
+            <p>{{if .Paciente.Alergias}}{{.Paciente.Alergias}}{{else}}No se han registrado alergias{{end}}</p>
+        </div>
+
+        <div class="info-section">
+            <h4><i class="fas fa-clipboard-list"></i> Notas Médicas</h4>
+            <p>{{if .Paciente.NotasMedicas}}{{.Paciente.NotasMedicas}}{{else}}No hay notas médicas registradas{{end}}
+            </p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="patient-header">
+            <h3><i class="fas fa-calendar-check"></i> Citas del Paciente</h3>
+            <div class="actions">
+                <a href="/citas/crear?pacienteId={{.Paciente.ID}}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Nueva Cita
+                </a>
+            </div>
+        </div>
+
+        {{if .Citas}}
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Motivo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Citas}}
+                <tr>
+                    <td>{{.Fecha.Format "02/01/2006 15:04"}}</td>
+                    <td>{{.Motivo}}</td>
+                    <td>
+                        <span class="badge {{if eq .Estado " Programada"}}badge-warning{{end}} {{if eq
+                            .Estado "Completada" }}badge-success{{end}} {{if eq .Estado "Cancelada"
+                            }}badge-danger{{end}}">
+                            {{.Estado}}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="/citas/{{.ID}}" class="btn-link">
+                            <i class="fas fa-eye"></i> Ver
+                        </a>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+        {{else}}
+        <p class="text-center">El paciente no tiene citas programadas.</p>
+        {{end}}
+    </div>
+</div>

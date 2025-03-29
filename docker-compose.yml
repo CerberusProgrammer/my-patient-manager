@@ -4,9 +4,9 @@ services:
   # Servicio de la aplicación
   app:
     build: .
-    container_name: my-patient-manager-app
+    container_name: mpm-app
     ports:
-      - "3000:3000"
+      - "4332:4332"
     depends_on:
       - db
     environment:
@@ -15,17 +15,33 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=my_patient_manager_db
-      - PORT=3000
+      - PORT=4332
     restart: always
-    command: sh -c "./wait-for-postgres.sh && ./app"
+    command: >
+      sh -c "
+        echo '#!/bin/sh
+        set -e
+        
+        echo \"Esperando a que PostgreSQL esté disponible...\"
+        export PGPASSWORD=$DB_PASSWORD
+        
+        until psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \"SELECT 1;\" > /dev/null 2>&1; do
+          echo \"PostgreSQL no está disponible aún - esperando...\"
+          sleep 1
+        done
+        
+        echo \"PostgreSQL está listo!\"' > /app/wait-pg.sh && 
+        chmod +x /app/wait-pg.sh && 
+        /app/wait-pg.sh && 
+        ./app"
     networks:
-      - resto-network
+      - mpm-network
     volumes:
       - ./templates:/app/templates
   # Servicio de base de datos
   db:
     image: postgres:15-alpine
-    container_name: resto-db
+    container_name: mpm-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -34,7 +50,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: always
     networks:
-      - resto-network
+      - mpm-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -42,7 +58,7 @@ services:
       retries: 5
 
 networks:
-  resto-network:
+  mpm-network:
     driver: bridge
 
 volumes:
