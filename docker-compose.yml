@@ -38,6 +38,7 @@ services:
       - mpm-network
     volumes:
       - ./templates:/app/templates
+      - ./static:/app/static
   # Servicio de base de datos
   db:
     image: postgres:15-alpine
