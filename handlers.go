@@ -61,7 +61,11 @@ func PacientesListHandler(c *fiber.Ctx) error {
 // PacienteCreateFormHandler muestra el formulario para crear un paciente
 func PacienteCreateFormHandler(c *fiber.Ctx) error {
 	return c.Render("patient/patient_create", fiber.Map{
-		"Title": "Crear Nuevo Paciente",
+		"Title":     "Crear Nuevo Paciente",
+		"Paciente":  Paciente{}, // Paciente vacío
+		"ReadOnly":  false,
+		"IsEditing": false,
+		"Path":      c.Path(),
 	})
 }
 
@@ -81,14 +85,17 @@ func PacienteCreateHandler(c *fiber.Ctx) error {
 		NotasMedicas:   c.FormValue("notasMedicas"),
 	}
 
-	// Parsear fecha de nacimiento solo si se proporciona
 	fechaNacStr := c.FormValue("fechaNacimiento")
 	if fechaNacStr != "" {
 		fechaNac, err := time.Parse("2006-01-02", fechaNacStr)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).Render("patient/patient_create", fiber.Map{
-				"Title": "Crear Nuevo Paciente",
-				"Error": "Formato de fecha incorrecto",
+				"Title":     "Crear Nuevo Paciente",
+				"Error":     "Formato de fecha incorrecto",
+				"Paciente":  paciente,
+				"ReadOnly":  false,
+				"IsEditing": false,
+				"Path":      c.Path(),
 			})
 		}
 		paciente.FechaNacimiento = fechaNac
@@ -98,8 +105,12 @@ func PacienteCreateHandler(c *fiber.Ctx) error {
 	result := DB.Create(&paciente)
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).Render("patient/patient_create", fiber.Map{
-			"Title": "Crear Nuevo Paciente",
-			"Error": "Error al crear paciente: " + result.Error.Error(),
+			"Title":     "Crear Nuevo Paciente",
+			"Error":     "Error al crear paciente: " + result.Error.Error(),
+			"Paciente":  paciente,
+			"ReadOnly":  false,
+			"IsEditing": false,
+			"Path":      c.Path(),
 		})
 	}
 
@@ -136,10 +147,14 @@ func PacienteViewHandler(c *fiber.Ctx) error {
 	var citas []Cita
 	DB.Where("paciente_id = ?", id).Find(&citas)
 
-	return c.Render("patient/patient_view", fiber.Map{
-		"Title":    "Detalles del Paciente",
-		"Paciente": paciente,
-		"Citas":    citas,
+	// Usar el mismo template que para crear/editar, pero en modo lectura
+	return c.Render("patient/patient_create", fiber.Map{
+		"Title":     "Detalles del Paciente",
+		"Paciente":  paciente,
+		"Citas":     citas,
+		"ReadOnly":  true,
+		"IsEditing": false,
+		"Path":      c.Path(),
 	})
 }
 
@@ -168,9 +183,12 @@ func PacienteEditFormHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Render("patient/patient_edit", fiber.Map{
-		"Title":    "Editar Paciente",
-		"Paciente": paciente,
+	return c.Render("patient/patient_create", fiber.Map{
+		"Title":     "Editar Paciente",
+		"Paciente":  paciente,
+		"ReadOnly":  false,
+		"IsEditing": true,
+		"Path":      c.Path(),
 	})
 }
 

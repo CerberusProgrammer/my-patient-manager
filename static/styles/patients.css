@@ -726,3 +726,31 @@ tr:hover td {
         align-items: center;
     }
 }
+
+/* Estilos para modo solo lectura */
+.readonly-mode label {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.readonly-mode .readonly-value {
+    padding: 8px 0;
+    border-bottom: 1px dashed #ccc;
+    min-height: 38px;
+    margin-bottom: 12px;
+}
+
+.readonly-mode .form-group {
+    margin-bottom: 16px;
+}
+
+/* Aplicar un fondo diferente para diferenciar el modo lectura */
+.readonly-mode {
+    background-color: #f9f9f9;
+}
+
+/* Hacer los botones más prominentes en modo lectura */
+.readonly-mode .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
