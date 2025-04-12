@@ -18,17 +18,21 @@
         <h3 class="section-title"><i class="fas fa-address-card"></i> Información Personal</h3>
         <div class="info-grid">
             <div class="info-item">
-                <strong>Nombre completo</strong>
-                <span>{{.Paciente.Nombre}} {{.Paciente.Apellido}}</span>
+                <strong>ID de Paciente</strong>
+                <span>{{.Paciente.ID}}</span>
             </div>
             <div class="info-item">
-                <strong>Fecha de nacimiento</strong>
+                <strong>Fecha de Nacimiento</strong>
                 <span>{{if not .Paciente.FechaNacimiento.IsZero}}{{.Paciente.FechaNacimiento.Format
                     "02/01/2006"}}{{else}}No registrada{{end}}</span>
             </div>
             <div class="info-item">
+                <strong>Edad</strong>
+                <span>{{.Paciente.Edad}} años</span>
+            </div>
+            <div class="info-item">
                 <strong>Género</strong>
-                <span>{{if .Paciente.Genero}}{{.Paciente.Genero}}{{else}}No registrado{{end}}</span>
+                <span>{{if .Paciente.Genero}}{{.Paciente.Genero}}{{else}}No especificado{{end}}</span>
             </div>
             <div class="info-item">
                 <strong>Teléfono</strong>
@@ -38,10 +42,6 @@
                 <strong>Email</strong>
                 <span>{{if .Paciente.Email}}{{.Paciente.Email}}{{else}}No registrado{{end}}</span>
             </div>
-            <div class="info-item">
-                <strong>Dirección</strong>
-                <span>{{if .Paciente.Direccion}}{{.Paciente.Direccion}}{{else}}No registrada{{end}}</span>
-            </div>
         </div>
     </div>
 
@@ -49,15 +49,12 @@
         <h3 class="section-title"><i class="fas fa-notes-medical"></i> Información Médica</h3>
         <div class="info-grid">
             <div class="info-item">
-                <strong>Número de seguro</strong>
-                <span>{{if .Paciente.NumeroSeguro}}{{.Paciente.NumeroSeguro}}{{else}}No registrado{{end}}</span>
+                <strong>Grupo Sanguíneo</strong>
+                <span>{{if .Paciente.GrupoSanguineo}}{{.Paciente.GrupoSanguineo}}{{else}}No registrado{{end}}</span>
             </div>
             <div class="info-item">
-                <strong>Grupo sanguíneo</strong>
-                <span>{{if .Paciente.GrupoSanguineo}}
-                    <span class="badge badge-primary">{{.Paciente.GrupoSanguineo}}</span>
-                    {{else}}No registrado{{end}}
-                </span>
+                <strong>Número de Seguro</strong>
+                <span>{{if .Paciente.NumeroSeguro}}{{.Paciente.NumeroSeguro}}{{else}}No registrado{{end}}</span>
             </div>
         </div>
 
@@ -74,11 +71,73 @@
         </div>
     </div>
 
+    <!-- Datos Antropométricos -->
+    <div class="card mb-4 patient-card">
+        <h3 class="section-title"><i class="fas fa-weight"></i> Datos Antropométricos</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>Estatura</strong>
+                <span>{{if gt .Paciente.Estatura 0}}{{.Paciente.Estatura}} cm{{else}}No registrado{{end}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Peso</strong>
+                <span>{{if gt .Paciente.Peso 0}}{{.Paciente.Peso}} kg{{else}}No registrado{{end}}</span>
+            </div>
+            <div class="info-item">
+                <strong>IMC</strong>
+                <span class="{{if gt .Paciente.IMC 0}}imc-value{{end}}">
+                    {{if gt .Paciente.IMC 0}}
+                    {{.Paciente.IMC}}
+                    {{if lt .Paciente.IMC 18.5}}
+                    <span class="badge badge-warning">Bajo peso</span>
+                    {{else if lt .Paciente.IMC 25}}
+                    <span class="badge badge-success">Normal</span>
+                    {{else if lt .Paciente.IMC 30}}
+                    <span class="badge badge-warning">Sobrepeso</span>
+                    {{else}}
+                    <span class="badge badge-danger">Obesidad</span>
+                    {{end}}
+                    {{else}}
+                    No registrado
+                    {{end}}
+                </span>
+            </div>
+            <div class="info-item">
+                <strong>Circunferencia Cintura</strong>
+                <span>{{if gt .Paciente.CircunferenciaCintura 0}}{{.Paciente.CircunferenciaCintura}} cm{{else}}No
+                    registrado{{end}}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estilo de vida -->
+    <div class="card mb-4 patient-card">
+        <h3 class="section-title"><i class="fas fa-walking"></i> Estilo de Vida</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>Tabaquismo</strong>
+                <span>{{if .Paciente.Tabaquismo}}{{.Paciente.Tabaquismo}}{{else}}No registrado{{end}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Consumo de Alcohol</strong>
+                <span>{{if .Paciente.ConsumoAlcohol}}{{.Paciente.ConsumoAlcohol}}{{else}}No registrado{{end}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Actividad Física</strong>
+                <span>{{if .Paciente.ActividadFisica}}{{.Paciente.ActividadFisica}}{{else}}No registrado{{end}}</span>
+            </div>
+            <div class="info-item">
+                <strong>Horas de Sueño</strong>
+                <span>{{if .Paciente.HorasSueño}}{{.Paciente.HorasSueño}}{{else}}No registrado{{end}}</span>
+            </div>
+        </div>
+    </div>
+
     <div class="card patient-card">
         <div class="appointments-header">
             <h3 class="section-title"><i class="fas fa-calendar-check"></i> Citas del Paciente</h3>
             <div class="actions">
-                <a href="/citas/crear?pacienteId={{.Paciente.ID}}" class="btn btn-primary btn-sm">
+                <a href="/citas/crear?paciente={{.Paciente.ID}}" class="btn btn-primary btn-sm">
                     <i class="fas fa-plus"></i> Nueva Cita
                 </a>
             </div>
@@ -90,25 +149,27 @@
                 <thead>
                     <tr>
                         <th>Fecha</th>
+                        <th>Hora</th>
                         <th>Motivo</th>
                         <th>Estado</th>
-                        <th class="actions-column">Acciones</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{range .Citas}}
                     <tr>
-                        <td>{{.Fecha.Format "02/01/2006 15:04"}}</td>
+                        <td>{{.Fecha.Format "02/01/2006"}}</td>
+                        <td>{{.Fecha.Format "15:04"}}</td>
                         <td>{{.Motivo}}</td>
                         <td>
-                            {{if eq .Estado "Programada"}}
-                            <span class="badge badge-primary"><i class="fas fa-calendar"></i> Programada</span>
-                            {{else if eq .Estado "Completada"}}
-                            <span class="badge badge-success"><i class="fas fa-check"></i> Completada</span>
+                            {{if eq .Estado "Completada"}}
+                            <span class="badge badge-success"><i class="fas fa-check"></i> {{.Estado}}</span>
                             {{else if eq .Estado "Cancelada"}}
-                            <span class="badge badge-danger"><i class="fas fa-times"></i> Cancelada</span>
+                            <span class="badge badge-danger"><i class="fas fa-times"></i> {{.Estado}}</span>
+                            {{else if eq .Estado "En espera"}}
+                            <span class="badge badge-warning"><i class="fas fa-clock"></i> {{.Estado}}</span>
                             {{else}}
-                            <span class="badge badge-warning"><i class="fas fa-exclamation"></i> {{.Estado}}</span>
+                            <span class="badge badge-primary"><i class="fas fa-calendar"></i> {{.Estado}}</span>
                             {{end}}
                         </td>
                         <td class="actions-cell">
@@ -116,10 +177,10 @@
                                 <a href="/citas/{{.ID}}" class="action-btn view-btn" title="Ver detalles">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="/citas/{{.ID}}/editar" class="action-btn edit-btn" title="Editar cita">
+                                <a href="/citas/{{.ID}}/editar" class="action-btn edit-btn" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="/citas/{{.ID}}/eliminar" class="action-btn delete-btn" title="Eliminar cita">
+                                <a href="/citas/{{.ID}}/eliminar" class="action-btn delete-btn" title="Eliminar">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
@@ -133,11 +194,120 @@
         <div class="empty-state">
             <i class="fas fa-calendar-times"></i>
             <h3>No hay citas programadas</h3>
-            <p>El paciente no tiene citas registradas en el sistema.</p>
-            <a href="/citas/crear?pacienteId={{.Paciente.ID}}" class="btn btn-primary btn-sm">
-                <i class="fas fa-plus"></i> Programar Cita
+            <p>Este paciente no tiene citas registradas actualmente</p>
+            <a href="/citas/crear?paciente={{.Paciente.ID}}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Programar primera cita
             </a>
         </div>
         {{end}}
     </div>
 </div>
+
+<style>
+    .section-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 24px;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-title i {
+        margin-right: 10px;
+    }
+
+    .patient-card {
+        padding: 24px;
+        margin-bottom: 24px;
+        transition: all 0.2s ease;
+    }
+
+    .patient-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .info-section {
+        margin-top: 24px;
+        background: rgba(0, 0, 0, 0.02);
+        border-radius: 8px;
+        padding: 16px 20px;
+    }
+
+    .info-section h4 {
+        color: var(--dark-color);
+        margin-bottom: 10px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    .info-section h4 i {
+        color: var(--primary-color);
+        margin-right: 8px;
+    }
+
+    .medical-info {
+        line-height: 1.6;
+        color: var(--text-color);
+        white-space: pre-line;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 48px;
+        text-align: center;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        color: #d1d5db;
+        margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+        color: var(--text-color);
+    }
+
+    .empty-state p {
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+    }
+
+    .appointments-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .imc-value {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Badges para estados */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .badge i {
+        margin-right: 4px;
+        font-size: 10px;
+    }
+</style>

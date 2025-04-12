@@ -11,578 +11,383 @@
 
     <div class="form-tabs">
         <button type="button" class="tab-btn active" data-tab="personal">
-            <i class="fas fa-address-card"></i> Información Personal
+            <i class="fas fa-user"></i> Información Personal
         </button>
         <button type="button" class="tab-btn" data-tab="contact">
-            <i class="fas fa-phone"></i> Contacto
+            <i class="fas fa-address-book"></i> Contacto
         </button>
         <button type="button" class="tab-btn" data-tab="medical">
-            <i class="fas fa-notes-medical"></i> Información Médica
+            <i class="fas fa-notes-medical"></i> Historial Médico
         </button>
         <button type="button" class="tab-btn" data-tab="anthropometric">
             <i class="fas fa-weight"></i> Datos Antropométricos
         </button>
         <button type="button" class="tab-btn" data-tab="lifestyle">
-            <i class="fas fa-running"></i> Estilo de Vida
+            <i class="fas fa-walking"></i> Estilo de Vida
         </button>
         <button type="button" class="tab-btn" data-tab="specialist">
-            <i class="fas fa-user-md"></i> Especialidades
+            <i class="fas fa-stethoscope"></i> Especialidades
         </button>
     </div>
 
-        <form action="/pacientes/{{.Paciente.ID}}/editar" method="post">
-            <div class="tab-content">
-                <!-- Tab 1: Información Personal -->
-                <div class="tab-pane active" id="tab-personal">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="nombre">Nombre*</label>
-                            <input type="text" id="nombre" name="nombre" value="{{.Paciente.Nombre}}" required
-                                autofocus>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="apellido">Apellido*</label>
-                            <input type="text" id="apellido" name="apellido" value="{{.Paciente.Apellido}}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="fechaNacimiento">Fecha de Nacimiento</label>
-                            <input type="date" id="fechaNacimiento" name="fechaNacimiento"
-                                value="{{if .Paciente.FechaNacimiento.IsZero}}{{else}}{{.Paciente.FechaNacimiento.Format "2006-01-02"}}{{end}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="genero">Género</label>
-                            <select id="genero" name="genero">
-                                <option value="" {{if eq .Paciente.Genero "" }}selected{{end}}>Seleccionar</option>
-                                <option value="Masculino" {{if eq .Paciente.Genero "Masculino" }}selected{{end}}>
-                                    Masculino</option>
-                                <option value="Femenino" {{if eq .Paciente.Genero "Femenino" }}selected{{end}}>Femenino
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="estadoCivil">Estado Civil</label>
-                            <select id="estadoCivil" name="estadoCivil">
-                                <option value="" {{if eq .Paciente.EstadoCivil "" }}selected{{end}}>Seleccionar</option>
-                                <option value="Soltero/a" {{if eq .Paciente.EstadoCivil "Soltero/a" }}selected{{end}}>
-                                    Soltero/a</option>
-                                <option value="Casado/a" {{if eq .Paciente.EstadoCivil "Casado/a" }}selected{{end}}>
-                                    Casado/a</option>
-                                <option value="Divorciado/a" {{if eq .Paciente.EstadoCivil "Divorciado/a"
-                                    }}selected{{end}}>Divorciado/a</option>
-                                <option value="Viudo/a" {{if eq .Paciente.EstadoCivil "Viudo/a" }}selected{{end}}>
-                                    Viudo/a</option>
-                                <option value="Unión libre" {{if eq .Paciente.EstadoCivil "Unión libre"
-                                    }}selected{{end}}>Unión libre</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="nacionalidad">Nacionalidad</label>
-                            <input type="text" id="nacionalidad" name="nacionalidad" value="{{.Paciente.Nacionalidad}}"
-                                placeholder="País de origen">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ocupacion">Ocupación</label>
-                            <input type="text" id="ocupacion" name="ocupacion" value="{{.Paciente.Ocupacion}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="nivelEducativo">Nivel Educativo</label>
-                            <select id="nivelEducativo" name="nivelEducativo">
-                                <option value="" {{if eq .Paciente.NivelEducativo "" }}selected{{end}}>Seleccionar
-                                </option>
-                                <option value="Primaria" {{if eq .Paciente.NivelEducativo "Primaria" }}selected{{end}}>
-                                    Primaria</option>
-                                <option value="Secundaria" {{if eq .Paciente.NivelEducativo "Secundaria"
-                                    }}selected{{end}}>Secundaria</option>
-                                <option value="Bachillerato" {{if eq .Paciente.NivelEducativo "Bachillerato"
-                                    }}selected{{end}}>Bachillerato</option>
-                                <option value="Técnico" {{if eq .Paciente.NivelEducativo "Técnico" }}selected{{end}}>
-                                    Técnico</option>
-                                <option value="Universidad" {{if eq .Paciente.NivelEducativo "Universidad"
-                                    }}selected{{end}}>Universidad</option>
-                                <option value="Posgrado" {{if eq .Paciente.NivelEducativo "Posgrado" }}selected{{end}}>
-                                    Posgrado</option>
-                                <option value="Sin estudios" {{if eq .Paciente.NivelEducativo "Sin estudios"
-                                    }}selected{{end}}>Sin estudios</option>
-                            </select>
-                        </div>
+    <form action="/pacientes/{{.Paciente.ID}}/editar" method="post">
+        <div class="tab-content">
+            <!-- Tab: Información Personal -->
+            <div class="tab-pane active" id="personal">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nombre">Nombre*</label>
+                        <input type="text" id="nombre" name="nombre" value="{{.Paciente.Nombre}}" required>
                     </div>
-
-                    <div class="tab-actions">
-                        <button type="button" class="btn btn-primary next-tab" data-next="contact">
-                            Siguiente <i class="fas fa-arrow-right"></i>
-                        </button>
+                    <div class="form-group">
+                        <label for="apellido">Apellido*</label>
+                        <input type="text" id="apellido" name="apellido" value="{{.Paciente.Apellido}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                        <input type="date" id="fechaNacimiento" name="fechaNacimiento"
+                            value="{{.Paciente.FechaNacimiento.Format " 2006-01-02"}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="genero">Género</label>
+                        <select id="genero" name="genero">
+                            <option value="" {{if eq .Paciente.Genero "" }}selected{{end}}>Seleccionar</option>
+                            <option value="Masculino" {{if eq .Paciente.Genero "Masculino" }}selected{{end}}>Masculino
+                            </option>
+                            <option value="Femenino" {{if eq .Paciente.Genero "Femenino" }}selected{{end}}>Femenino
+                            </option>
+                            <option value="No binario" {{if eq .Paciente.Genero "No binario" }}selected{{end}}>No
+                                binario</option>
+                            <option value="Prefiero no decir" {{if eq .Paciente.Genero "Prefiero no decir"
+                                }}selected{{end}}>Prefiero no decir</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="estadoCivil">Estado Civil</label>
+                        <select id="estadoCivil" name="estadoCivil">
+                            <option value="" {{if eq .Paciente.EstadoCivil "" }}selected{{end}}>Seleccionar</option>
+                            <option value="Soltero/a" {{if eq .Paciente.EstadoCivil "Soltero/a" }}selected{{end}}>
+                                Soltero/a</option>
+                            <option value="Casado/a" {{if eq .Paciente.EstadoCivil "Casado/a" }}selected{{end}}>Casado/a
+                            </option>
+                            <option value="Divorciado/a" {{if eq .Paciente.EstadoCivil "Divorciado/a" }}selected{{end}}>
+                                Divorciado/a</option>
+                            <option value="Viudo/a" {{if eq .Paciente.EstadoCivil "Viudo/a" }}selected{{end}}>Viudo/a
+                            </option>
+                            <option value="Unión libre" {{if eq .Paciente.EstadoCivil "Unión libre" }}selected{{end}}>
+                                Unión libre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ocupacion">Ocupación</label>
+                        <input type="text" id="ocupacion" name="ocupacion" value="{{.Paciente.Ocupacion}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="nivelEducativo">Nivel Educativo</label>
+                        <select id="nivelEducativo" name="nivelEducativo">
+                            <option value="" {{if eq .Paciente.NivelEducativo "" }}selected{{end}}>Seleccionar</option>
+                            <option value="Primaria" {{if eq .Paciente.NivelEducativo "Primaria" }}selected{{end}}>
+                                Primaria</option>
+                            <option value="Secundaria" {{if eq .Paciente.NivelEducativo "Secundaria" }}selected{{end}}>
+                                Secundaria</option>
+                            <option value="Preparatoria" {{if eq .Paciente.NivelEducativo "Preparatoria"
+                                }}selected{{end}}>Preparatoria</option>
+                            <option value="Universidad" {{if eq .Paciente.NivelEducativo "Universidad"
+                                }}selected{{end}}>Universidad</option>
+                            <option value="Posgrado" {{if eq .Paciente.NivelEducativo "Posgrado" }}selected{{end}}>
+                                Posgrado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nacionalidad">Nacionalidad</label>
+                        <input type="text" id="nacionalidad" name="nacionalidad" value="{{.Paciente.Nacionalidad}}">
                     </div>
                 </div>
 
-                <!-- Tab 2: Información de Contacto -->
-                <div class="tab-pane" id="tab-contact">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="telefono">Teléfono</label>
-                            <input type="tel" id="telefono" name="telefono" value="{{.Paciente.Telefono}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="telefonoAlternativo">Teléfono Alternativo</label>
-                            <input type="tel" id="telefonoAlternativo" name="telefonoAlternativo"
-                                value="{{.Paciente.TelefonoAlternativo}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" value="{{.Paciente.Email}}">
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="direccion">Dirección</label>
-                            <textarea id="direccion" name="direccion" rows="3">{{.Paciente.Direccion}}</textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="numeroSeguro">Número de Seguro</label>
-                            <input type="text" id="numeroSeguro" name="numeroSeguro" value="{{.Paciente.NumeroSeguro}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="tipoSeguro">Tipo de Seguro</label>
-                            <select id="tipoSeguro" name="tipoSeguro">
-                                <option value="" {{if eq .Paciente.TipoSeguro "" }}selected{{end}}>Seleccionar</option>
-                                <option value="Público" {{if eq .Paciente.TipoSeguro "Público" }}selected{{end}}>Público
-                                </option>
-                                <option value="Privado" {{if eq .Paciente.TipoSeguro "Privado" }}selected{{end}}>Privado
-                                </option>
-                                <option value="Sin seguro" {{if eq .Paciente.TipoSeguro "Sin seguro" }}selected{{end}}>
-                                    Sin seguro</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="numeroPoliza">Número de Póliza</label>
-                            <input type="text" id="numeroPoliza" name="numeroPoliza" value="{{.Paciente.NumeroPoliza}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="fechaVencimientoPoliza">Fecha Vencimiento Póliza</label>
-                            <input type="date" id="fechaVencimientoPoliza" name="fechaVencimientoPoliza"
-                                value="{{if .Paciente.FechaVencimientoPoliza.IsZero}}{{else}}{{.Paciente.FechaVencimientoPoliza.Format "2006-01-02"}}{{end}}">
-                        </div>
-                    </div>
-
-                    <div class="section-title mt-4">
-                        <h4><i class="fas fa-phone-alt"></i> Contacto de Emergencia</h4>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="contactoEmergenciaNombre">Nombre</label>
-                            <input type="text" id="contactoEmergenciaNombre" name="contactoEmergenciaNombre"
-                                value="{{.Paciente.ContactoEmergenciaNombre}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="contactoEmergenciaTel">Teléfono</label>
-                            <input type="tel" id="contactoEmergenciaTel" name="contactoEmergenciaTel"
-                                value="{{.Paciente.ContactoEmergenciaTel}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="contactoEmergenciaRelacion">Relación</label>
-                            <input type="text" id="contactoEmergenciaRelacion" name="contactoEmergenciaRelacion"
-                                value="{{.Paciente.ContactoEmergenciaRelacion}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="medicoAsignado">Médico Asignado</label>
-                            <input type="text" id="medicoAsignado" name="medicoAsignado"
-                                value="{{.Paciente.MedicoAsignado}}">
-                        </div>
-                    </div>
-
-                    <div class="tab-actions">
-                        <button type="button" class="btn btn-secondary prev-tab" data-prev="personal">
-                            <i class="fas fa-arrow-left"></i> Anterior
-                        </button>
-                        <button type="button" class="btn btn-primary next-tab" data-next="medical">
-                            Siguiente <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tab 3: Información Médica -->
-                <div class="tab-pane" id="tab-medical">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="grupoSanguineo">Grupo Sanguíneo</label>
-                            <select id="grupoSanguineo" name="grupoSanguineo">
-                                <option value="" {{if eq .Paciente.GrupoSanguineo "" }}selected{{end}}>Seleccionar
-                                </option>
-                                <option value="A+" {{if eq .Paciente.GrupoSanguineo "A+" }}selected{{end}}>A+</option>
-                                <option value="A-" {{if eq .Paciente.GrupoSanguineo "A-" }}selected{{end}}>A-</option>
-                                <option value="B+" {{if eq .Paciente.GrupoSanguineo "B+" }}selected{{end}}>B+</option>
-                                <option value="B-" {{if eq .Paciente.GrupoSanguineo "B-" }}selected{{end}}>B-</option>
-                                <option value="AB+" {{if eq .Paciente.GrupoSanguineo "AB+" }}selected{{end}}>AB+
-                                </option>
-                                <option value="AB-" {{if eq .Paciente.GrupoSanguineo "AB-" }}selected{{end}}>AB-
-                                </option>
-                                <option value="O+" {{if eq .Paciente.GrupoSanguineo "O+" }}selected{{end}}>O+</option>
-                                <option value="O-" {{if eq .Paciente.GrupoSanguineo "O-" }}selected{{end}}>O-</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="medicamentosActuales">Medicación Actual</label>
-                            <input type="text" id="medicamentosActuales" name="medicamentosActuales"
-                                value="{{.Paciente.MedicamentosActuales}}">
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="alergias">Alergias</label>
-                            <textarea id="alergias" name="alergias" rows="2">{{.Paciente.Alergias}}</textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="enfermedadesCronicas">Enfermedades Crónicas</label>
-                            <textarea id="enfermedadesCronicas" name="enfermedadesCronicas"
-                                rows="2">{{.Paciente.EnfermedadesCronicas}}</textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="antecedentesQuirurgicos">Antecedentes Quirúrgicos</label>
-                            <textarea id="antecedentesQuirurgicos" name="antecedentesQuirurgicos"
-                                rows="2">{{.Paciente.AntecedentesQuirurgicos}}</textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="antecedentesFamiliares">Antecedentes Familiares</label>
-                            <textarea id="antecedentesFamiliares" name="antecedentesFamiliares"
-                                rows="2">{{.Paciente.AntecedentesFamiliares}}</textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="hospitalizaciones">Hospitalizaciones Previas</label>
-                            <textarea id="hospitalizaciones" name="hospitalizaciones"
-                                rows="2">{{.Paciente.Hospitalizaciones}}</textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="discapacidadesCondicionesEspeciales">Discapacidades o Condiciones
-                                Especiales</label>
-                            <textarea id="discapacidadesCondicionesEspeciales"
-                                name="discapacidadesCondicionesEspeciales"
-                                rows="2">{{.Paciente.DiscapacidadesCondicionesEspeciales}}</textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="reaccionesMedicamentos">Reacciones Adversas a Medicamentos</label>
-                            <textarea id="reaccionesMedicamentos" name="reaccionesMedicamentos"
-                                rows="2">{{.Paciente.ReaccionesMedicamentos}}</textarea>
-                        </div>
-                    </div>
-
-                    <div class="section-title mt-4">
-                        <h4><i class="fas fa-syringe"></i> Vacunación</h4>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="vacunasAplicadas">Vacunas Aplicadas</label>
-                            <textarea id="vacunasAplicadas" name="vacunasAplicadas"
-                                rows="2">{{.Paciente.VacunasAplicadas}}</textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="vacunasPendientes">Vacunas Pendientes</label>
-                            <textarea id="vacunasPendientes" name="vacunasPendientes"
-                                rows="2">{{.Paciente.VacunasPendientes}}</textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="reaccionesVacunas">Reacciones a Vacunas</label>
-                            <textarea id="reaccionesVacunas" name="reaccionesVacunas"
-                                rows="2">{{.Paciente.ReaccionesVacunas}}</textarea>
-                        </div>
-                    </div>
-
-                    <div class="section-title mt-4 gynecology-section">
-                        <h4><i class="fas fa-venus"></i> Historial Ginecológico</h4>
-                        <div class="toggle-section">
-                            <input type="checkbox" id="toggleGynecology" class="toggle-checkbox">
-                            <label for="toggleGynecology" class="toggle-label">Mostrar/Ocultar</label>
-                        </div>
-                    </div>
-
-                    <div class="gynecology-content" style="display: none;">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="menarca">Edad de primera menstruación</label>
-                                <input type="number" id="menarca" name="menarca" min="0" step="1"
-                                    value="{{.Paciente.Menarca}}">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="fechaUltimoPeriodo">Fecha último periodo</label>
-                                <input type="date" id="fechaUltimoPeriodo" name="fechaUltimoPeriodo"
-                                    value="{{if .Paciente.FechaUltimoPeriodo.IsZero}}{{else}}{{.Paciente.FechaUltimoPeriodo.Format "2006-01-02"}}{{end}}">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="embarazos">Número de embarazos</label>
-                                <input type="number" id="embarazos" name="embarazos" min="0"
-                                    value="{{.Paciente.Embarazos}}">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="partos">Partos</label>
-                                <input type="number" id="partos" name="partos" min="0" value="{{.Paciente.Partos}}">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="cesareas">Cesáreas</label>
-                                <input type="number" id="cesareas" name="cesareas" min="0"
-                                    value="{{.Paciente.Cesareas}}">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="abortos">Abortos</label>
-                                <input type="number" id="abortos" name="abortos" min="0" value="{{.Paciente.Abortos}}">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="metodoAnticonceptivo">Método anticonceptivo</label>
-                                <input type="text" id="metodoAnticonceptivo" name="metodoAnticonceptivo"
-                                    value="{{.Paciente.MetodoAnticonceptivo}}">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section-title mt-4">
-                        <h4><i class="fas fa-file-medical"></i> Notas Médicas Adicionales</h4>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group full-width">
-                            <label for="notasMedicas">Notas y observaciones generales</label>
-                            <textarea id="notasMedicas" name="notasMedicas"
-                                rows="3">{{.Paciente.NotasMedicas}}</textarea>
-                        </div>
-                    </div>
-
-                    <div class="tab-actions">
-                        <button type="button" class="btn btn-secondary prev-tab" data-prev="contact">
-                            <i class="fas fa-arrow-left"></i> Anterior
-                        </button>
-                        <button type="button" class="btn btn-primary next-tab" data-next="anthropometric">
-                            Siguiente <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tab 4: Datos Antropométricos -->
-                <div class="tab-pane" id="tab-anthropometric">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="estatura">Estatura (cm)</label>
-                            <input type="number" id="estatura" name="estatura" min="0" step="0.1"
-                                placeholder="Ej: 175.5"
-                                value="{{if eq .Paciente.Estatura 0.0}}{{else}}{{.Paciente.Estatura}}{{end}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="peso">Peso (kg)</label>
-                            <input type="number" id="peso" name="peso" min="0" step="0.1" placeholder="Ej: 70.5"
-                                value="{{if eq .Paciente.Peso 0.0}}{{else}}{{.Paciente.Peso}}{{end}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="imc">IMC (Índice de Masa Corporal)</label>
-                            <input type="number" id="imc" name="imc" step="0.01" readonly
-                                value="{{if eq .Paciente.IMC 0.0}}{{else}}{{.Paciente.IMC}}{{end}}">
-                            <small class="form-text text-muted">Se calcula automáticamente al ingresar peso y
-                                estatura</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="circunferenciaCintura">Circunferencia de Cintura (cm)</label>
-                            <input type="number" id="circunferenciaCintura" name="circunferenciaCintura" min="0"
-                                step="0.1"
-                                value="{{if eq .Paciente.CircunferenciaCintura 0.0}}{{else}}{{.Paciente.CircunferenciaCintura}}{{end}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="circunferenciaCadera">Circunferencia de Cadera (cm)</label>
-                            <input type="number" id="circunferenciaCadera" name="circunferenciaCadera" min="0"
-                                step="0.1"
-                                value="{{if eq .Paciente.CircunferenciaCadera 0.0}}{{else}}{{.Paciente.CircunferenciaCadera}}{{end}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="relacionCinturaCadera">Índice Cintura-Cadera</label>
-                            <input type="number" id="relacionCinturaCadera" name="relacionCinturaCadera" step="0.01"
-                                readonly>
-                            <small class="form-text text-muted">Se calcula automáticamente</small>
-                        </div>
-                    </div>
-
-                    <div class="tab-actions">
-                        <button type="button" class="btn btn-secondary prev-tab" data-prev="medical">
-                            <i class="fas fa-arrow-left"></i> Anterior
-                        </button>
-                        <button type="button" class="btn btn-primary next-tab" data-next="lifestyle">
-                            Siguiente <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tab 5: Estilo de Vida -->
-                <div class="tab-pane" id="tab-lifestyle">
-                    <div class="form-grid">
-                        <!-- Tabaquismo -->
-                        <div class="form-group">
-                            <label for="tabaquismo">Tabaquismo</label>
-                            <select id="tabaquismo" name="tabaquismo">
-                                <option value="" {{if eq .Paciente.Tabaquismo "" }}selected{{end}}>Seleccionar</option>
-                                <option value="No fumador" {{if eq .Paciente.Tabaquismo "No fumador" }}selected{{end}}>
-                                    No fumador</option>
-                                <option value="Ex-fumador" {{if eq .Paciente.Tabaquismo "Ex-fumador" }}selected{{end}}>
-                                    Ex-fumador</option>
-                                <option value="Fumador ocasional" {{if eq .Paciente.Tabaquismo "Fumador ocasional"
-                                    }}selected{{end}}>Fumador ocasional</option>
-                                <option value="Fumador diario" {{if eq .Paciente.Tabaquismo "Fumador diario"
-                                    }}selected{{end}}>Fumador diario</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="detalleTabaquismo" style="display:none;">
-                            <label for="detallesTabaquismo">Detalles de tabaquismo</label>
-                            <input type="text" id="detallesTabaquismo" name="detallesTabaquismo"
-                                placeholder="Cantidad y frecuencia">
-                        </div>
-
-                        <!-- Alcohol -->
-                        <div class="form-group">
-                            <label for="consumoAlcohol">Consumo de Alcohol</label>
-                            <select id="consumoAlcohol" name="consumoAlcohol">
-                                <option value="" {{if eq .Paciente.ConsumoAlcohol "" }}selected{{end}}>Seleccionar
-                                </option>
-                                <option value="No consume" {{if eq .Paciente.ConsumoAlcohol "No consume"
-                                    }}selected{{end}}>No consume</option>
-                                <option value="Ocasionalmente" {{if eq .Paciente.ConsumoAlcohol "Ocasionalmente"
-                                    }}selected{{end}}>Ocasionalmente</option>
-                                <option value="Semanalmente" {{if eq .Paciente.ConsumoAlcohol "Semanalmente"
-                                    }}selected{{end}}>Semanalmente</option>
-                                <option value="Diariamente" {{if eq .Paciente.ConsumoAlcohol "Diariamente"
-                                    }}selected{{end}}>Diariamente</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="detalleAlcohol" style="display:none;">
-                            <label for="detallesAlcohol">Detalles de consumo</label>
-                            <input type="text" id="detallesAlcohol" name="detallesAlcohol"
-                                placeholder="Tipo y cantidad">
-                        </div>
-
-                        <!-- Actividad Física -->
-                        <div class="form-group">
-                            <label for="actividadFisica">Actividad Física</label>
-                            <select id="actividadFisica" name="actividadFisica">
-                                <option value="" {{if eq .Paciente.ActividadFisica "" }}selected{{end}}>Seleccionar
-                                </option>
-                                <option value="Sedentario" {{if eq .Paciente.ActividadFisica "Sedentario"
-                                    }}selected{{end}}>Sedentario</option>
-                                <option value="Ligera" {{if eq .Paciente.ActividadFisica "Ligera" }}selected{{end}}>
-                                    Ligera</option>
-                                <option value="Moderada" {{if eq .Paciente.ActividadFisica "Moderada" }}selected{{end}}>
-                                    Moderada</option>
-                                <option value="Intensa" {{if eq .Paciente.ActividadFisica "Intensa" }}selected{{end}}>
-                                    Intensa</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="tipoActividad">Tipo de Actividad</label>
-                            <input type="text" id="tipoActividad" name="tipoActividad"
-                                placeholder="Ej: Caminar, natación, etc." value="{{.Paciente.TipoActividad}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="frecuenciaActividad">Frecuencia Semanal</label>
-                            <input type="number" id="frecuenciaActividad" name="frecuenciaActividad" min="0" max="7"
-                                placeholder="días/semana" value="{{.Paciente.FrecuenciaActividad}}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="horasSueño">Horas de Sueño Diarias</label>
-                            <input type="number" id="horasSueño" name="horasSueño" min="0" max="24" step="0.5"
-                                placeholder="Ej: 7.5" value="{{.Paciente.HorasSueño}}">
-                        </div>
-
-                        <!-- Hábitos Alimenticios -->
-                        <div class="form-group full-width">
-                            <label for="habitosAlimenticios">Hábitos Alimenticios</label>
-                            <textarea id="habitosAlimenticios" name="habitosAlimenticios" rows="2"
-                                placeholder="Descripción general de dieta">{{.Paciente.HabitosAlimenticios}}</textarea>
-                        </div>
-
-                        <!-- Consumo de Drogas -->
-                        <div class="form-group">
-                            <label for="consumoDrogas">Consumo de Drogas</label>
-                            <select id="consumoDrogas" name="consumoDrogas">
-                                <option value="" {{if eq .Paciente.ConsumoDrogas "" }}selected{{end}}>Seleccionar
-                                </option>
-                                <option value="No consume" {{if eq .Paciente.ConsumoDrogas "No consume"
-                                    }}selected{{end}}>No consume</option>
-                                <option value="Consume o ha consumido" {{if eq
-                                    .Paciente.ConsumoDrogas "Consume o ha consumido" }}selected{{end}}>Consume o ha
-                                    consumido</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group full-width" id="detalleDrogas" style="display:none;">
-                            <label for="detallesDrogas">Detalles de consumo</label>
-                            <textarea id="detallesDrogas" name="detallesDrogas" rows="2"
-                                placeholder="Tipo, frecuencia y última vez"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="tab-actions">
-                        <button type="button" class="btn btn-secondary prev-tab" data-prev="anthropometric">
-                            <i class="fas fa-arrow-left"></i> Anterior
-                        </button>
-                        <button type="button" class="btn btn-primary next-tab" data-next="specialist">
-                            Siguiente <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tab 6: Especialidades -->
-                <div class="tab-pane" id="tab-specialist">
-                    <div class="form-sections">
-                        <!-- Aquí puedes agregar el contenido para las especialidades cuando lo tengas disponible -->
-                        <div class="section-message">
-                            <p>Esta sección está en desarrollo. Aquí se incluirán los campos específicos para cada
-                                especialidad médica.</p>
-                        </div>
-                    </div>
-
-                    <div class="tab-actions">
-                        <button type="button" class="btn btn-secondary prev-tab" data-prev="lifestyle">
-                            <i class="fas fa-arrow-left"></i> Anterior
-                        </button>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Guardar Cambios
-                        </button>
-                    </div>
+                <div class="tab-actions">
+                    <button type="button" class="btn btn-primary next-tab" data-next="contact">
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
-        </form>
-    </div>
+
+            <!-- Tab: Información de Contacto -->
+            <div class="tab-pane" id="contact">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="telefono">Teléfono Principal</label>
+                        <input type="tel" id="telefono" name="telefono" value="{{.Paciente.Telefono}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefonoAlternativo">Teléfono Alternativo</label>
+                        <input type="tel" id="telefonoAlternativo" name="telefonoAlternativo"
+                            value="{{.Paciente.TelefonoAlternativo}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="{{.Paciente.Email}}">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="direccion">Dirección</label>
+                        <textarea id="direccion" name="direccion" rows="2">{{.Paciente.Direccion}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactoEmergenciaNombre">Contacto de Emergencia (Nombre)</label>
+                        <input type="text" id="contactoEmergenciaNombre" name="contactoEmergenciaNombre"
+                            value="{{.Paciente.ContactoEmergenciaNombre}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactoEmergenciaTel">Contacto de Emergencia (Teléfono)</label>
+                        <input type="tel" id="contactoEmergenciaTel" name="contactoEmergenciaTel"
+                            value="{{.Paciente.ContactoEmergenciaTel}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactoEmergenciaRelacion">Relación con el Contacto</label>
+                        <input type="text" id="contactoEmergenciaRelacion" name="contactoEmergenciaRelacion"
+                            value="{{.Paciente.ContactoEmergenciaRelacion}}">
+                    </div>
+                </div>
+
+                <div class="tab-actions">
+                    <button type="button" class="btn btn-secondary prev-tab" data-prev="personal">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button type="button" class="btn btn-primary next-tab" data-next="medical">
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab: Historial Médico -->
+            <div class="tab-pane" id="medical">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="grupoSanguineo">Grupo Sanguíneo</label>
+                        <select id="grupoSanguineo" name="grupoSanguineo">
+                            <option value="" {{if eq .Paciente.GrupoSanguineo "" }}selected{{end}}>Seleccionar</option>
+                            <option value="A+" {{if eq .Paciente.GrupoSanguineo "A+" }}selected{{end}}>A+</option>
+                            <option value="A-" {{if eq .Paciente.GrupoSanguineo "A-" }}selected{{end}}>A-</option>
+                            <option value="B+" {{if eq .Paciente.GrupoSanguineo "B+" }}selected{{end}}>B+</option>
+                            <option value="B-" {{if eq .Paciente.GrupoSanguineo "B-" }}selected{{end}}>B-</option>
+                            <option value="AB+" {{if eq .Paciente.GrupoSanguineo "AB+" }}selected{{end}}>AB+</option>
+                            <option value="AB-" {{if eq .Paciente.GrupoSanguineo "AB-" }}selected{{end}}>AB-</option>
+                            <option value="O+" {{if eq .Paciente.GrupoSanguineo "O+" }}selected{{end}}>O+</option>
+                            <option value="O-" {{if eq .Paciente.GrupoSanguineo "O-" }}selected{{end}}>O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="numeroSeguro">Número de Seguro</label>
+                        <input type="text" id="numeroSeguro" name="numeroSeguro" value="{{.Paciente.NumeroSeguro}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoSeguro">Tipo de Seguro</label>
+                        <input type="text" id="tipoSeguro" name="tipoSeguro" value="{{.Paciente.TipoSeguro}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="alergias">Alergias</label>
+                        <textarea id="alergias" name="alergias" rows="2">{{.Paciente.Alergias}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="enfermedadesCronicas">Enfermedades Crónicas</label>
+                        <textarea id="enfermedadesCronicas" name="enfermedadesCronicas"
+                            rows="2">{{.Paciente.EnfermedadesCronicas}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="antecedentesQuirurgicos">Antecedentes Quirúrgicos</label>
+                        <textarea id="antecedentesQuirurgicos" name="antecedentesQuirurgicos"
+                            rows="2">{{.Paciente.AntecedentesQuirurgicos}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="antecedentesFamiliares">Antecedentes Familiares</label>
+                        <textarea id="antecedentesFamiliares" name="antecedentesFamiliares"
+                            rows="2">{{.Paciente.AntecedentesFamiliares}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="medicamentosActuales">Medicamentos Actuales</label>
+                        <textarea id="medicamentosActuales" name="medicamentosActuales"
+                            rows="2">{{.Paciente.MedicamentosActuales}}</textarea>
+                    </div>
+                </div>
+
+                <div class="tab-actions">
+                    <button type="button" class="btn btn-secondary prev-tab" data-prev="contact">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button type="button" class="btn btn-primary next-tab" data-next="anthropometric">
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab: Datos Antropométricos -->
+            <div class="tab-pane" id="anthropometric">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="estatura">Estatura (cm)</label>
+                        <input type="number" id="estatura" name="estatura" step="0.01" value="{{.Paciente.Estatura}}"
+                            min="0" max="300">
+                    </div>
+                    <div class="form-group">
+                        <label for="peso">Peso (kg)</label>
+                        <input type="number" id="peso" name="peso" step="0.1" value="{{.Paciente.Peso}}" min="0"
+                            max="500">
+                    </div>
+                    <div class="form-group">
+                        <label for="imc">IMC (kg/m²)</label>
+                        <input type="number" id="imc" name="imc" step="0.01" value="{{.Paciente.IMC}}" readonly>
+                        <div class="form-text" id="imcResult"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="circunferenciaCintura">Circunferencia de Cintura (cm)</label>
+                        <input type="number" id="circunferenciaCintura" name="circunferenciaCintura" step="0.1"
+                            value="{{.Paciente.CircunferenciaCintura}}" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="circunferenciaCadera">Circunferencia de Cadera (cm)</label>
+                        <input type="number" id="circunferenciaCadera" name="circunferenciaCadera" step="0.1"
+                            value="{{.Paciente.CircunferenciaCadera}}" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="relacionCinturaCadera">Índice Cintura-Cadera</label>
+                        <input type="number" id="relacionCinturaCadera" name="relacionCinturaCadera" step="0.01"
+                            readonly>
+                    </div>
+                </div>
+
+                <div class="tab-actions">
+                    <button type="button" class="btn btn-secondary prev-tab" data-prev="medical">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button type="button" class="btn btn-primary next-tab" data-next="lifestyle">
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab: Estilo de Vida -->
+            <div class="tab-pane" id="lifestyle">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="tabaquismo">Tabaquismo</label>
+                        <select id="tabaquismo" name="tabaquismo">
+                            <option value="" {{if eq .Paciente.Tabaquismo "" }}selected{{end}}>Seleccionar</option>
+                            <option value="No fumador" {{if eq .Paciente.Tabaquismo "No fumador" }}selected{{end}}>No
+                                fumador</option>
+                            <option value="Ex-fumador" {{if eq .Paciente.Tabaquismo "Ex-fumador" }}selected{{end}}>
+                                Ex-fumador</option>
+                            <option value="Fumador ocasional" {{if eq .Paciente.Tabaquismo "Fumador ocasional"
+                                }}selected{{end}}>Fumador ocasional</option>
+                            <option value="Fumador diario" {{if eq .Paciente.Tabaquismo "Fumador diario"
+                                }}selected{{end}}>Fumador diario</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="consumoAlcohol">Consumo de Alcohol</label>
+                        <select id="consumoAlcohol" name="consumoAlcohol">
+                            <option value="" {{if eq .Paciente.ConsumoAlcohol "" }}selected{{end}}>Seleccionar</option>
+                            <option value="No consume" {{if eq .Paciente.ConsumoAlcohol "No consume" }}selected{{end}}>
+                                No consume</option>
+                            <option value="Ocasional" {{if eq .Paciente.ConsumoAlcohol "Ocasional" }}selected{{end}}>
+                                Ocasional</option>
+                            <option value="Moderado" {{if eq .Paciente.ConsumoAlcohol "Moderado" }}selected{{end}}>
+                                Moderado</option>
+                            <option value="Frecuente" {{if eq .Paciente.ConsumoAlcohol "Frecuente" }}selected{{end}}>
+                                Frecuente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="actividadFisica">Actividad Física</label>
+                        <select id="actividadFisica" name="actividadFisica">
+                            <option value="" {{if eq .Paciente.ActividadFisica "" }}selected{{end}}>Seleccionar</option>
+                            <option value="Sedentario" {{if eq .Paciente.ActividadFisica "Sedentario" }}selected{{end}}>
+                                Sedentario</option>
+                            <option value="Ligera" {{if eq .Paciente.ActividadFisica "Ligera" }}selected{{end}}>Ligera
+                            </option>
+                            <option value="Moderada" {{if eq .Paciente.ActividadFisica "Moderada" }}selected{{end}}>
+                                Moderada</option>
+                            <option value="Intensa" {{if eq .Paciente.ActividadFisica "Intensa" }}selected{{end}}>
+                                Intensa</option>
+                            <option value="Muy intensa" {{if eq .Paciente.ActividadFisica "Muy intensa"
+                                }}selected{{end}}>Muy intensa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="horasSueño">Horas de Sueño</label>
+                        <input type="text" id="horasSueño" name="horasSueño" value="{{.Paciente.HorasSueño}}"
+                            placeholder="Ej: 7-8 horas">
+                    </div>
+                    <div class="form-group">
+                        <label for="habitosAlimenticios">Hábitos Alimenticios</label>
+                        <textarea id="habitosAlimenticios" name="habitosAlimenticios"
+                            rows="3">{{.Paciente.HabitosAlimenticios}}</textarea>
+                    </div>
+                </div>
+
+                <div class="tab-actions">
+                    <button type="button" class="btn btn-secondary prev-tab" data-prev="anthropometric">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button type="button" class="btn btn-primary next-tab" data-next="specialist">
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab: Especialidades -->
+            <div class="tab-pane" id="specialist">
+                <div class="form-grid">
+                    <!-- Nutrición -->
+                    <div class="form-group full-width">
+                        <h4><i class="fas fa-apple-alt"></i> Nutrición</h4>
+                    </div>
+                    <div class="form-group">
+                        <label for="restriccionesDieteticas">Restricciones Dietéticas</label>
+                        <input type="text" id="restriccionesDieteticas" name="restriccionesDieteticas"
+                            value="{{.Paciente.RestriccionesDieteticas}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="preferenciasAlimentarias">Preferencias Alimentarias</label>
+                        <input type="text" id="preferenciasAlimentarias" name="preferenciasAlimentarias"
+                            value="{{.Paciente.PreferenciasAlimentarias}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="cambiosPeso">Cambios de Peso Recientes</label>
+                        <input type="text" id="cambiosPeso" name="cambiosPeso" value="{{.Paciente.CambiosPeso}}">
+                    </div>
+
+                    <!-- Cardiología -->
+                    <div class="form-group full-width">
+                        <h4><i class="fas fa-heartbeat"></i> Cardiología</h4>
+                    </div>
+                    <div class="form-group">
+                        <label for="presionArterialHabitual">Presión Arterial Habitual</label>
+                        <input type="text" id="presionArterialHabitual" name="presionArterialHabitual"
+                            value="{{.Paciente.PresionArterialHabitual}}" placeholder="Ej: 120/80">
+                    </div>
+                    <div class="form-group">
+                        <label for="problemasCardiacos">Problemas Cardíacos</label>
+                        <input type="text" id="problemasCardiacos" name="problemasCardiacos"
+                            value="{{.Paciente.ProblemasCardiacos}}">
+                    </div>
+
+                    <!-- Notas Generales -->
+                    <div class="form-group full-width">
+                        <label for="notasMedicas">Notas Médicas Generales</label>
+                        <textarea id="notasMedicas" name="notasMedicas" rows="4">{{.Paciente.NotasMedicas}}</textarea>
+                    </div>
+                </div>
+
+                <div class="tab-actions">
+                    <button type="button" class="btn btn-secondary prev-tab" data-prev="lifestyle">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script>
@@ -596,22 +401,16 @@
 
         tabBtns.forEach(btn => {
             btn.addEventListener('click', function () {
-                const tabId = this.getAttribute('data-tab');
-                console.log("Click en tab:", tabId);
+                const tab = this.getAttribute('data-tab');
+                console.log("Seleccionando tab:", tab);
 
-                // Desactivar todos los tabs y contenidos
+                // Remover clase activa de todos los botones y pestañas
                 tabBtns.forEach(b => b.classList.remove('active'));
                 tabPanes.forEach(p => p.classList.remove('active'));
 
-                // Activar el tab seleccionado
+                // Añadir clase activa al botón y pestaña seleccionados
                 this.classList.add('active');
-                const tabPane = document.getElementById('tab-' + tabId);
-                if (tabPane) {
-                    tabPane.classList.add('active');
-                    console.log("Activado:", tabPane.id);
-                } else {
-                    console.error("No se encontró el panel:", 'tab-' + tabId);
-                }
+                document.getElementById(tab).classList.add('active');
             });
         });
 
@@ -622,42 +421,22 @@
         nextBtns.forEach(btn => {
             btn.addEventListener('click', function () {
                 const nextTab = this.getAttribute('data-next');
-                console.log("Avanzando a:", nextTab);
+                console.log("Navegando a tab:", nextTab);
 
-                tabBtns.forEach(b => b.classList.remove('active'));
-                tabPanes.forEach(p => p.classList.remove('active'));
-
-                const nextTabBtn = document.querySelector(`[data-tab="${nextTab}"]`);
-                const nextTabPane = document.getElementById('tab-' + nextTab);
-
-                if (nextTabBtn && nextTabPane) {
-                    nextTabBtn.classList.add('active');
-                    nextTabPane.classList.add('active');
-                    console.log("Navegación exitosa");
-                } else {
-                    console.error("Error de navegación, no se encontró tab o panel");
-                }
+                // Simular click en el botón de la pestaña correspondiente
+                const tabBtn = document.querySelector(`.tab-btn[data-tab="${nextTab}"]`);
+                tabBtn.click();
             });
         });
 
         prevBtns.forEach(btn => {
             btn.addEventListener('click', function () {
                 const prevTab = this.getAttribute('data-prev');
-                console.log("Retrocediendo a:", prevTab);
+                console.log("Volviendo a tab:", prevTab);
 
-                tabBtns.forEach(b => b.classList.remove('active'));
-                tabPanes.forEach(p => p.classList.remove('active'));
-
-                const prevTabBtn = document.querySelector(`[data-tab="${prevTab}"]`);
-                const prevTabPane = document.getElementById('tab-' + prevTab);
-
-                if (prevTabBtn && prevTabPane) {
-                    prevTabBtn.classList.add('active');
-                    prevTabPane.classList.add('active');
-                    console.log("Navegación exitosa");
-                } else {
-                    console.error("Error de navegación, no se encontró tab o panel");
-                }
+                // Simular click en el botón de la pestaña correspondiente
+                const tabBtn = document.querySelector(`.tab-btn[data-tab="${prevTab}"]`);
+                tabBtn.click();
             });
         });
 
@@ -665,14 +444,36 @@
         const pesoInput = document.getElementById('peso');
         const estaturaInput = document.getElementById('estatura');
         const imcInput = document.getElementById('imc');
+        const imcResultDiv = document.getElementById('imcResult');
 
         function calcularIMC() {
             if (pesoInput.value && estaturaInput.value) {
                 const peso = parseFloat(pesoInput.value);
-                const estatura = parseFloat(estaturaInput.value) / 100; // convertir cm a metros
+                const estatura = parseFloat(estaturaInput.value) / 100; // convertir a metros
                 if (peso > 0 && estatura > 0) {
                     const imc = peso / (estatura * estatura);
                     imcInput.value = imc.toFixed(2);
+
+                    // Clasificación del IMC
+                    let clasificacion = '';
+                    let color = '';
+
+                    if (imc < 18.5) {
+                        clasificacion = 'Bajo peso';
+                        color = '#3498db';
+                    } else if (imc < 25) {
+                        clasificacion = 'Peso normal';
+                        color = '#2ecc71';
+                    } else if (imc < 30) {
+                        clasificacion = 'Sobrepeso';
+                        color = '#f39c12';
+                    } else {
+                        clasificacion = 'Obesidad';
+                        color = '#e74c3c';
+                    }
+
+                    imcResultDiv.textContent = clasificacion;
+                    imcResultDiv.style.color = color;
                 }
             }
         }
@@ -680,8 +481,7 @@
         if (pesoInput && estaturaInput && imcInput) {
             pesoInput.addEventListener('input', calcularIMC);
             estaturaInput.addEventListener('input', calcularIMC);
-
-            // Calcular IMC inicial si ya hay datos
+            // Calcular IMC inicial
             calcularIMC();
         }
 
@@ -695,8 +495,8 @@
                 const cintura = parseFloat(cinturaInput.value);
                 const cadera = parseFloat(caderaInput.value);
                 if (cintura > 0 && cadera > 0) {
-                    const indice = cintura / cadera;
-                    indiceCCInput.value = indice.toFixed(2);
+                    const indiceCC = cintura / cadera;
+                    indiceCCInput.value = indiceCC.toFixed(2);
                 }
             }
         }
@@ -704,100 +504,8 @@
         if (cinturaInput && caderaInput && indiceCCInput) {
             cinturaInput.addEventListener('input', calcularIndiceCC);
             caderaInput.addEventListener('input', calcularIndiceCC);
-
-            // Calcular índice inicial si ya hay datos
+            // Calcular índice inicial
             calcularIndiceCC();
-        }
-
-        // Toggle para la sección ginecológica
-        const toggleGynecology = document.getElementById('toggleGynecology');
-        const gynecologyContent = document.querySelector('.gynecology-content');
-
-        if (toggleGynecology && gynecologyContent) {
-            toggleGynecology.addEventListener('change', function () {
-                gynecologyContent.style.display = this.checked ? 'block' : 'none';
-            });
-
-            // Verificar el género para mostrar/ocultar la sección automáticamente
-            const generoSelect = document.getElementById('genero');
-            if (generoSelect) {
-                // Intentar obtener el valor del género si ya está seleccionado
-                const generoValue = generoSelect.value;
-                // Si es femenino, mostrar sección ginecológica
-                if (generoValue === 'Femenino') {
-                    toggleGynecology.checked = true;
-                    gynecologyContent.style.display = 'block';
-                }
-
-                // Actualizar al cambiar el género
-                generoSelect.addEventListener('change', function () {
-                    if (this.value === 'Femenino') {
-                        toggleGynecology.checked = true;
-                        gynecologyContent.style.display = 'block';
-                    } else {
-                        toggleGynecology.checked = false;
-                        gynecologyContent.style.display = 'none';
-                    }
-                });
-            }
-        }
-
-        // Mostrar/ocultar campos adicionales según selecciones para estilo de vida
-        // Para tabaquismo
-        const tabaquismo = document.getElementById('tabaquismo');
-        const detalleTabaquismo = document.getElementById('detalleTabaquismo');
-
-        if (tabaquismo && detalleTabaquismo) {
-            // Mostrar/ocultar inicialmente según el valor seleccionado
-            if (tabaquismo.value === 'Ex-fumador' || tabaquismo.value === 'Fumador ocasional' || tabaquismo.value === 'Fumador diario') {
-                detalleTabaquismo.style.display = 'block';
-            }
-
-            tabaquismo.addEventListener('change', function () {
-                if (this.value === 'Ex-fumador' || this.value === 'Fumador ocasional' || this.value === 'Fumador diario') {
-                    detalleTabaquismo.style.display = 'block';
-                } else {
-                    detalleTabaquismo.style.display = 'none';
-                }
-            });
-        }
-
-        // Para alcohol
-        const alcohol = document.getElementById('consumoAlcohol');
-        const detalleAlcohol = document.getElementById('detalleAlcohol');
-
-        if (alcohol && detalleAlcohol) {
-            // Mostrar/ocultar inicialmente según el valor seleccionado
-            if (alcohol.value !== '' && alcohol.value !== 'No consume') {
-                detalleAlcohol.style.display = 'block';
-            }
-
-            alcohol.addEventListener('change', function () {
-                if (this.value !== '' && this.value !== 'No consume') {
-                    detalleAlcohol.style.display = 'block';
-                } else {
-                    detalleAlcohol.style.display = 'none';
-                }
-            });
-        }
-
-        // Para drogas
-        const drogas = document.getElementById('consumoDrogas');
-        const detalleDrogas = document.getElementById('detalleDrogas');
-
-        if (drogas && detalleDrogas) {
-            // Mostrar/ocultar inicialmente según el valor seleccionado
-            if (drogas.value === 'Consume o ha consumido') {
-                detalleDrogas.style.display = 'block';
-            }
-
-            drogas.addEventListener('change', function () {
-                if (this.value === 'Consume o ha consumido') {
-                    detalleDrogas.style.display = 'block';
-                } else {
-                    detalleDrogas.style.display = 'none';
-                }
-            });
         }
     });
 </script>
