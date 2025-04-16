@@ -475,6 +475,38 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 	sort = strings.TrimSpace(sort)
 	direction = strings.TrimSpace(direction)
 
+	// Validar parámetros de ordenación
+	validColumns := map[string]bool{
+		"id":       true,
+		"nombre":   true,
+		"apellido": true,
+		"email":    true,
+		"telefono": true,
+	}
+	if sort == "" {
+		sort = "id"
+		direction = "asc"
+	}
+	if direction != "asc" && direction != "desc" {
+		direction = "asc"
+	}
+	if !validColumns[sort] {
+		// Si la columna no es válida, devolver error pero siempre con Pacientes vacío
+		if c.Get("HX-Request") == "true" {
+			return c.Status(fiber.StatusBadRequest).Render("patient/patients_filter", fiber.Map{
+				"Error":         "Columna de ordenación inválida.",
+				"Pacientes":     []Paciente{},
+				"SortColumn":    sort,
+				"SortDirection": direction,
+			}, "")
+		}
+		return c.Status(fiber.StatusBadRequest).Render("patient/patients_view", fiber.Map{
+			"Title":     "Lista de Pacientes",
+			"Error":     "Columna de ordenación inválida.",
+			"Pacientes": []Paciente{},
+		}, "")
+	}
+
 	fmt.Printf("Filtro - Query: '%s', Género: '%s', Sangre: '%s', Sort: '%s', Dir: '%s'\n",
 		query, gender, blood, sort, direction)
 
@@ -496,27 +528,13 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		db = db.Where("grupo_sanguineo = ?", blood)
 	}
 
-	validColumns := map[string]bool{
-		"id":       true,
-		"nombre":   true,
-		"apellido": true,
-		"email":    true,
-		"telefono": true,
-	}
-
-	if sort != "" && validColumns[sort] {
-		orderStr := sort
-		if direction == "desc" {
-			orderStr += " DESC"
-		} else {
-			orderStr += " ASC"
-		}
-		db = db.Order(orderStr)
+	orderStr := sort
+	if direction == "desc" {
+		orderStr += " DESC"
 	} else {
-		db = db.Order("id ASC")
-		sort = "id"
-		direction = "asc"
+		orderStr += " ASC"
 	}
+	db = db.Order(orderStr)
 
 	var pacientes []Paciente
 	result := db.Find(&pacientes)
