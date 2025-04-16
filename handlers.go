@@ -71,37 +71,103 @@ func PacienteCreateFormHandler(c *fiber.Ctx) error {
 
 // PacienteCreateHandler procesa la creación de un paciente
 func PacienteCreateHandler(c *fiber.Ctx) error {
-	// Crear nuevo paciente con valores básicos
-	paciente := Paciente{
-		Nombre:         c.FormValue("nombre"),
-		Apellido:       c.FormValue("apellido"),
-		Genero:         c.FormValue("genero"),
-		Telefono:       c.FormValue("telefono"),
-		Email:          c.FormValue("email"),
-		Direccion:      c.FormValue("direccion"),
-		NumeroSeguro:   c.FormValue("numeroSeguro"),
-		GrupoSanguineo: c.FormValue("grupoSanguineo"),
-		Alergias:       c.FormValue("alergias"),
-		NotasMedicas:   c.FormValue("notasMedicas"),
+	// Validar campos obligatorios
+	nombre := strings.TrimSpace(c.FormValue("nombre"))
+	apellido := strings.TrimSpace(c.FormValue("apellido"))
+	genero := strings.TrimSpace(c.FormValue("genero"))
+	telefono := strings.TrimSpace(c.FormValue("telefono"))
+	email := strings.TrimSpace(c.FormValue("email"))
+	fechaNacStr := strings.TrimSpace(c.FormValue("fechaNacimiento"))
+
+	errores := make([]string, 0)
+	if nombre == "" {
+		errores = append(errores, "El nombre es obligatorio.")
+	}
+	if apellido == "" {
+		errores = append(errores, "El apellido es obligatorio.")
+	}
+	if fechaNacStr == "" {
+		errores = append(errores, "La fecha de nacimiento es obligatoria.")
+	}
+	if genero == "" {
+		errores = append(errores, "El género es obligatorio.")
+	}
+	if telefono == "" {
+		errores = append(errores, "El teléfono es obligatorio.")
+	}
+	if email == "" {
+		errores = append(errores, "El email es obligatorio.")
+	}
+	if email != "" && !strings.Contains(email, "@") {
+		errores = append(errores, "El email no es válido.")
 	}
 
-	fechaNacStr := c.FormValue("fechaNacimiento")
+	// Validar duplicados por nombre/email
+	var count int64
+	DB.Model(&Paciente{}).Where("LOWER(nombre) = ? AND LOWER(apellido) = ?", strings.ToLower(nombre), strings.ToLower(apellido)).Count(&count)
+	if count > 0 {
+		errores = append(errores, "Ya existe un paciente con ese nombre y apellido.")
+	}
+	DB.Model(&Paciente{}).Where("LOWER(email) = ?", strings.ToLower(email)).Count(&count)
+	if count > 0 {
+		errores = append(errores, "Ya existe un paciente con ese email.")
+	}
+
+	// Parsear fecha de nacimiento
+	var fechaNac time.Time
 	if fechaNacStr != "" {
-		fechaNac, err := time.Parse("2006-01-02", fechaNacStr)
+		var err error
+		fechaNac, err = time.Parse("2006-01-02", fechaNacStr)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).Render("patient/patient_create", fiber.Map{
-				"Title":     "Crear Nuevo Paciente",
-				"Error":     "Formato de fecha incorrecto",
-				"Paciente":  paciente,
-				"ReadOnly":  false,
-				"IsEditing": false,
-				"Path":      c.Path(),
-			})
+			errores = append(errores, "Formato de fecha incorrecto.")
 		}
-		paciente.FechaNacimiento = fechaNac
 	}
 
-	// Guardar en la base de datos
+	// Si hay errores, mostrar el formulario con los mensajes
+	if len(errores) > 0 {
+		return c.Status(fiber.StatusBadRequest).Render("patient/patient_create", fiber.Map{
+			"Title": "Crear Nuevo Paciente",
+			"Error": strings.Join(errores, " "),
+			"Paciente": Paciente{
+				Nombre:          nombre,
+				Apellido:        apellido,
+				Genero:          genero,
+				Telefono:        telefono,
+				Email:           email,
+				FechaNacimiento: fechaNac,
+			},
+			"ReadOnly":  false,
+			"IsEditing": false,
+			"Path":      c.Path(),
+		})
+	}
+
+	// Calcular edad
+	edad := 0
+	if !fechaNac.IsZero() {
+		today := time.Now()
+		edad = today.Year() - fechaNac.Year()
+		if today.YearDay() < fechaNac.YearDay() {
+			edad--
+		}
+	}
+
+	// Crear nuevo paciente
+	paciente := Paciente{
+		Nombre:          nombre,
+		Apellido:        apellido,
+		Genero:          genero,
+		Telefono:        telefono,
+		Email:           email,
+		FechaNacimiento: fechaNac,
+		Edad:            edad,
+		Direccion:       c.FormValue("direccion"),
+		NumeroSeguro:    c.FormValue("numeroSeguro"),
+		GrupoSanguineo:  c.FormValue("grupoSanguineo"),
+		Alergias:        c.FormValue("alergias"),
+		NotasMedicas:    c.FormValue("notasMedicas"),
+	}
+
 	result := DB.Create(&paciente)
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).Render("patient/patient_create", fiber.Map{
@@ -114,8 +180,7 @@ func PacienteCreateHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	// Redirigir a la lista de pacientes
-	return c.Redirect("/pacientes")
+	return c.Redirect("/pacientes?msg=Paciente creado correctamente")
 }
 
 // PacienteViewHandler muestra los detalles de un paciente
@@ -211,44 +276,107 @@ func PacienteUpdateHandler(c *fiber.Ctx) error {
 		})
 	}
 
+	// Validar campos obligatorios
+	nombre := strings.TrimSpace(c.FormValue("nombre"))
+	apellido := strings.TrimSpace(c.FormValue("apellido"))
+	genero := strings.TrimSpace(c.FormValue("genero"))
+	telefono := strings.TrimSpace(c.FormValue("telefono"))
+	email := strings.TrimSpace(c.FormValue("email"))
+	fechaNacStr := strings.TrimSpace(c.FormValue("fechaNacimiento"))
+
+	errores := make([]string, 0)
+	if nombre == "" {
+		errores = append(errores, "El nombre es obligatorio.")
+	}
+	if apellido == "" {
+		errores = append(errores, "El apellido es obligatorio.")
+	}
+	if fechaNacStr == "" {
+		errores = append(errores, "La fecha de nacimiento es obligatoria.")
+	}
+	if genero == "" {
+		errores = append(errores, "El género es obligatorio.")
+	}
+	if telefono == "" {
+		errores = append(errores, "El teléfono es obligatorio.")
+	}
+	if email == "" {
+		errores = append(errores, "El email es obligatorio.")
+	}
+	if email != "" && !strings.Contains(email, "@") {
+		errores = append(errores, "El email no es válido.")
+	}
+
+	// Validar duplicados por nombre/email (excluyendo el propio paciente)
+	var count int64
+	DB.Model(&Paciente{}).Where("LOWER(nombre) = ? AND LOWER(apellido) = ? AND id <> ?", strings.ToLower(nombre), strings.ToLower(apellido), id).Count(&count)
+	if count > 0 {
+		errores = append(errores, "Ya existe un paciente con ese nombre y apellido.")
+	}
+	DB.Model(&Paciente{}).Where("LOWER(email) = ? AND id <> ?", strings.ToLower(email), id).Count(&count)
+	if count > 0 {
+		errores = append(errores, "Ya existe un paciente con ese email.")
+	}
+
+	// Parsear fecha de nacimiento
+	var fechaNac time.Time
+	if fechaNacStr != "" {
+		var err error
+		fechaNac, err = time.Parse("2006-01-02", fechaNacStr)
+		if err != nil {
+			errores = append(errores, "Formato de fecha incorrecto.")
+		}
+	}
+
+	// Si hay errores, mostrar el formulario con los mensajes
+	if len(errores) > 0 {
+		return c.Status(fiber.StatusBadRequest).Render("patient/patient_create", fiber.Map{
+			"Title":     "Editar Paciente",
+			"Error":     strings.Join(errores, " "),
+			"Paciente":  paciente,
+			"ReadOnly":  false,
+			"IsEditing": true,
+			"Path":      c.Path(),
+		})
+	}
+
+	// Calcular edad
+	edad := 0
+	if !fechaNac.IsZero() {
+		today := time.Now()
+		edad = today.Year() - fechaNac.Year()
+		if today.YearDay() < fechaNac.YearDay() {
+			edad--
+		}
+	}
+
 	// Actualizar datos del paciente
-	paciente.Nombre = c.FormValue("nombre")
-	paciente.Apellido = c.FormValue("apellido")
-	paciente.Genero = c.FormValue("genero")
-	paciente.Telefono = c.FormValue("telefono")
-	paciente.Email = c.FormValue("email")
+	paciente.Nombre = nombre
+	paciente.Apellido = apellido
+	paciente.Genero = genero
+	paciente.Telefono = telefono
+	paciente.Email = email
+	paciente.FechaNacimiento = fechaNac
+	paciente.Edad = edad
 	paciente.Direccion = c.FormValue("direccion")
 	paciente.NumeroSeguro = c.FormValue("numeroSeguro")
 	paciente.GrupoSanguineo = c.FormValue("grupoSanguineo")
 	paciente.Alergias = c.FormValue("alergias")
 	paciente.NotasMedicas = c.FormValue("notasMedicas")
 
-	// Parsear fecha de nacimiento solo si se proporciona
-	fechaNacStr := c.FormValue("fechaNacimiento")
-	if fechaNacStr != "" {
-		fechaNac, err := time.Parse("2006-01-02", fechaNacStr)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).Render("patient/patient_edit", fiber.Map{
-				"Title":    "Editar Paciente",
-				"Paciente": paciente,
-				"Error":    "Formato de fecha incorrecto",
-			})
-		}
-		paciente.FechaNacimiento = fechaNac
-	}
-
-	// Guardar cambios
 	result = DB.Save(&paciente)
 	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).Render("patient/patient_edit", fiber.Map{
-			"Title":    "Editar Paciente",
-			"Paciente": paciente,
-			"Error":    "Error al actualizar paciente: " + result.Error.Error(),
+		return c.Status(fiber.StatusInternalServerError).Render("patient/patient_create", fiber.Map{
+			"Title":     "Editar Paciente",
+			"Error":     "Error al actualizar paciente: " + result.Error.Error(),
+			"Paciente":  paciente,
+			"ReadOnly":  false,
+			"IsEditing": true,
+			"Path":      c.Path(),
 		})
 	}
 
-	// Redirigir a la vista de detalles
-	return c.Redirect(fmt.Sprintf("/pacientes/%d", id))
+	return c.Redirect(fmt.Sprintf("/pacientes/%d?msg=Paciente actualizado correctamente", id))
 }
 
 // PacienteDeleteFormHandler muestra la confirmación para eliminar un paciente

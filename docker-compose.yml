@@ -17,23 +17,7 @@ services:
       - DB_NAME=my_patient_manager_db
       - PORT=4332
     restart: always
-    command: >
-      sh -c "
-        echo '#!/bin/sh
-        set -e
-        
-        echo \"Esperando a que PostgreSQL esté disponible...\"
-        export PGPASSWORD=$DB_PASSWORD
-        
-        until psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \"SELECT 1;\" > /dev/null 2>&1; do
-          echo \"PostgreSQL no está disponible aún - esperando...\"
-          sleep 1
-        done
-        
-        echo \"PostgreSQL está listo!\"' > /app/wait-pg.sh && 
-        chmod +x /app/wait-pg.sh && 
-        /app/wait-pg.sh && 
-        ./app"
+    command: sh -c "./wait-for-postgres.sh ./app"
     networks:
       - mpm-network
     volumes:
@@ -47,13 +31,15 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=my_patient_manager_db
+    ports:
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always
     networks:
       - mpm-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -p 5432" ]
       interval: 5s
       timeout: 5s
       retries: 5

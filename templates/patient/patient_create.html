@@ -1,3 +1,4 @@
+{{define "embed"}}
 <div class="patient-form {{if .ReadOnly}}readonly-mode{{end}}">
     <div class="patient-header">
         <h2>
@@ -12,83 +13,89 @@
     </div>
 
     {{if .Error}}
-    <div class="error-message">
+    <div class="notifier error">
         <i class="fas fa-exclamation-circle"></i> {{.Error}}
     </div>
     {{end}}
+    {{if .Message}}
+    <div class="notifier success">
+        <i class="fas fa-check-circle"></i> {{.Message}}
+    </div>
+    {{end}}
 
-    <div class="form-tabs">
-        <button type="button" class="tab-btn active" data-tab="personal">
-            <i class="fas fa-user"></i> Información Personal
+    <div class="form-tabs animated">
+        <button type="button" class="tab-btn active" data-tab="personal" title="Datos personales">
+            <i class="fas fa-user"></i> Personal
         </button>
-        <button type="button" class="tab-btn" data-tab="contact">
+        <button type="button" class="tab-btn" data-tab="contact" title="Contacto">
             <i class="fas fa-address-book"></i> Contacto
         </button>
-        <button type="button" class="tab-btn" data-tab="medical">
-            <i class="fas fa-notes-medical"></i> Historial Médico
+        <button type="button" class="tab-btn" data-tab="medical" title="Historial médico">
+            <i class="fas fa-notes-medical"></i> Médico
         </button>
-        <button type="button" class="tab-btn" data-tab="anthropometric">
-            <i class="fas fa-weight"></i> Datos Antropométricos
+        <button type="button" class="tab-btn" data-tab="anthropometric" title="Datos antropométricos">
+            <i class="fas fa-weight"></i> Antropometría
         </button>
-        <button type="button" class="tab-btn" data-tab="lifestyle">
+        <button type="button" class="tab-btn" data-tab="lifestyle" title="Estilo de vida">
             <i class="fas fa-walking"></i> Estilo de Vida
         </button>
-        <button type="button" class="tab-btn" data-tab="specialist">
+        <button type="button" class="tab-btn" data-tab="specialist" title="Especialidades">
             <i class="fas fa-stethoscope"></i> Especialidades
         </button>
     </div>
 
-    {{if not .ReadOnly}}<form
-        action="{{if .IsEditing}}/pacientes/{{.Paciente.ID}}/editar{{else}}/pacientes/crear{{end}}" method="post">
+    {{if not .ReadOnly}}
+    <form action="{{if .IsEditing}}/pacientes/{{.Paciente.ID}}/editar{{else}}/pacientes/crear{{end}}" method="post"
+        autocomplete="off" class="animated-form">
         {{end}}
         <div class="tab-content">
             <!-- Tab: Información Personal -->
             <div class="tab-pane active" id="personal">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="nombre">Nombre*</label>
+                        <label for="nombre">Nombre* <span class="tooltip" title="Nombre(s) del paciente"><i
+                                    class="fas fa-info-circle"></i></span></label>
                         {{if .ReadOnly}}
                         <div class="readonly-value">{{.Paciente.Nombre}}</div>
                         {{else}}
-                        <input type="text" id="nombre" name="nombre" value="{{.Paciente.Nombre}}" required>
+                        <input type="text" id="nombre" name="nombre" value="{{.Paciente.Nombre}}" required
+                            placeholder="Ej: Juan Carlos" maxlength="50" autofocus>
                         {{end}}
                     </div>
                     <div class="form-group">
-                        <label for="apellido">Apellido*</label>
+                        <label for="apellido">Apellido* <span class="tooltip" title="Apellido(s) del paciente"><i
+                                    class="fas fa-info-circle"></i></span></label>
                         {{if .ReadOnly}}
                         <div class="readonly-value">{{.Paciente.Apellido}}</div>
                         {{else}}
-                        <input type="text" id="apellido" name="apellido" value="{{.Paciente.Apellido}}" required>
+                        <input type="text" id="apellido" name="apellido" value="{{.Paciente.Apellido}}" required
+                            placeholder="Ej: Ramírez López" maxlength="50">
                         {{end}}
                     </div>
                     <div class="form-group">
-                        <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                        <label for="fechaNacimiento">Fecha de Nacimiento* <span class="tooltip"
+                                title="Formato: AAAA-MM-DD"><i class="fas fa-info-circle"></i></span></label>
                         {{if .ReadOnly}}
                         <div class="readonly-value">
                             {{if not .Paciente.FechaNacimiento.IsZero}}
-                            {{.Paciente.FechaNacimiento.Format "02/01/2006"}}
+                            {{.Paciente.FechaNacimiento.Format "02/01/2006"}} ({{.Paciente.Edad}} años)
                             {{else}}
                             No registrada
                             {{end}}
                         </div>
                         {{else}}
                         <input type="date" id="fechaNacimiento" name="fechaNacimiento"
-                            value="{{if not .Paciente.FechaNacimiento.IsZero}}{{.Paciente.FechaNacimiento.Format "
-                            2006-01-02"}}{{end}}">
+                            value="{{if not .Paciente.FechaNacimiento.IsZero}}{{.Paciente.FechaNacimiento.Format "2006-01-02"}}{{end}}" required>
+                        <small id="edadPaciente" class="form-text"></small>
                         {{end}}
                     </div>
                     <div class="form-group">
-                        <label for="genero">Género</label>
+                        <label for="genero">Género*</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.Genero}}
-                            {{.Paciente.Genero}}
-                            {{else}}
-                            No especificado
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{if .Paciente.Genero}}{{.Paciente.Genero}}{{else}}No
+                            especificado{{end}}</div>
                         {{else}}
-                        <select id="genero" name="genero">
+                        <select id="genero" name="genero" required>
                             <option value="" {{if eq .Paciente.Genero "" }}selected{{end}}>Seleccionar</option>
                             <option value="Masculino" {{if eq .Paciente.Genero "Masculino" }}selected{{end}}>Masculino
                             </option>
@@ -101,167 +108,48 @@
                         </select>
                         {{end}}
                     </div>
-                    <div class="form-group">
-                        <label for="estadoCivil">Estado Civil</label>
-                        {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.EstadoCivil}}
-                            {{.Paciente.EstadoCivil}}
-                            {{else}}
-                            No especificado
-                            {{end}}
-                        </div>
-                        {{else}}
-                        <select id="estadoCivil" name="estadoCivil">
-                            <option value="" {{if eq .Paciente.EstadoCivil "" }}selected{{end}}>Seleccionar</option>
-                            <option value="Soltero/a" {{if eq .Paciente.EstadoCivil "Soltero/a" }}selected{{end}}>
-                                Soltero/a</option>
-                            <option value="Casado/a" {{if eq .Paciente.EstadoCivil "Casado/a" }}selected{{end}}>Casado/a
-                            </option>
-                            <option value="Divorciado/a" {{if eq .Paciente.EstadoCivil "Divorciado/a" }}selected{{end}}>
-                                Divorciado/a</option>
-                            <option value="Viudo/a" {{if eq .Paciente.EstadoCivil "Viudo/a" }}selected{{end}}>Viudo/a
-                            </option>
-                            <option value="Unión libre" {{if eq .Paciente.EstadoCivil "Unión libre" }}selected{{end}}>
-                                Unión libre</option>
-                        </select>
-                        {{end}}
-                    </div>
-                    <div class="form-group">
-                        <label for="ocupacion">Ocupación</label>
-                        {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.Ocupacion}}
-                            {{.Paciente.Ocupacion}}
-                            {{else}}
-                            No especificada
-                            {{end}}
-                        </div>
-                        {{else}}
-                        <input type="text" id="ocupacion" name="ocupacion" value="{{.Paciente.Ocupacion}}">
-                        {{end}}
-                    </div>
-                    <div class="form-group">
-                        <label for="nacionalidad">Nacionalidad</label>
-                        {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.Nacionalidad}}
-                            {{.Paciente.Nacionalidad}}
-                            {{else}}
-                            No especificada
-                            {{end}}
-                        </div>
-                        {{else}}
-                        <input type="text" id="nacionalidad" name="nacionalidad" value="{{.Paciente.Nacionalidad}}">
-                        {{end}}
-                    </div>
                 </div>
-
                 <div class="tab-actions">
-                    {{if .ReadOnly}}
-                    <a href="/pacientes/{{.Paciente.ID}}/editar" class="btn btn-primary">
-                        <i class="fas fa-edit"></i> Editar Paciente
-                    </a>
-                    {{else}}
+                    {{if not .ReadOnly}}
                     <button type="button" class="btn btn-primary next-tab" data-next="contact">
                         Siguiente <i class="fas fa-arrow-right"></i>
                     </button>
                     {{end}}
                 </div>
             </div>
-
             <!-- Tab: Información de Contacto -->
             <div class="tab-pane" id="contact">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="telefono">Teléfono Principal</label>
+                        <label for="telefono">Teléfono Principal* <span class="tooltip" title="10 dígitos"><i
+                                    class="fas fa-info-circle"></i></span></label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.Telefono}}
-                            {{.Paciente.Telefono}}
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.Telefono}}</div>
                         {{else}}
-                        <input type="tel" id="telefono" name="telefono" value="{{.Paciente.Telefono}}">
+                        <input type="tel" id="telefono" name="telefono" value="{{.Paciente.Telefono}}" required
+                            pattern="[0-9]{10}" placeholder="Ej: 5512345678" maxlength="10">
                         {{end}}
                     </div>
                     <div class="form-group">
-                        <label for="telefonoAlternativo">Teléfono Alternativo</label>
+                        <label for="email">Email* <span class="tooltip" title="Correo electrónico válido"><i
+                                    class="fas fa-info-circle"></i></span></label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.TelefonoAlternativo}}
-                            {{.Paciente.TelefonoAlternativo}}
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.Email}}</div>
                         {{else}}
-                        <input type="tel" id="telefonoAlternativo" name="telefonoAlternativo"
-                            value="{{.Paciente.TelefonoAlternativo}}">
-                        {{end}}
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.Email}}
-                            {{.Paciente.Email}}
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
-                        {{else}}
-                        <input type="email" id="email" name="email" value="{{.Paciente.Email}}">
+                        <input type="email" id="email" name="email" value="{{.Paciente.Email}}" required
+                            placeholder="Ej: paciente@email.com" maxlength="60">
                         {{end}}
                     </div>
                     <div class="form-group full-width">
                         <label for="direccion">Dirección</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.Direccion}}
-                            {{.Paciente.Direccion}}
-                            {{else}}
-                            No registrada
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.Direccion}}</div>
                         {{else}}
-                        <textarea id="direccion" name="direccion" rows="2">{{.Paciente.Direccion}}</textarea>
-                        {{end}}
-                    </div>
-                    <div class="form-group">
-                        <label for="contactoEmergenciaNombre">Contacto de Emergencia (Nombre)</label>
-                        {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.ContactoEmergenciaNombre}}
-                            {{.Paciente.ContactoEmergenciaNombre}}
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
-                        {{else}}
-                        <input type="text" id="contactoEmergenciaNombre" name="contactoEmergenciaNombre"
-                            value="{{.Paciente.ContactoEmergenciaNombre}}">
-                        {{end}}
-                    </div>
-                    <div class="form-group">
-                        <label for="contactoEmergenciaTel">Contacto de Emergencia (Teléfono)</label>
-                        {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.ContactoEmergenciaTel}}
-                            {{.Paciente.ContactoEmergenciaTel}}
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
-                        {{else}}
-                        <input type="tel" id="contactoEmergenciaTel" name="contactoEmergenciaTel"
-                            value="{{.Paciente.ContactoEmergenciaTel}}">
+                        <textarea id="direccion" name="direccion" rows="2"
+                            placeholder="Calle, número, colonia, ciudad">{{.Paciente.Direccion}}</textarea>
                         {{end}}
                     </div>
                 </div>
-
                 <div class="tab-actions">
                     {{if not .ReadOnly}}
                     <button type="button" class="btn btn-secondary prev-tab" data-prev="personal">
@@ -273,20 +161,13 @@
                     {{end}}
                 </div>
             </div>
-
             <!-- Tab: Historial Médico -->
             <div class="tab-pane" id="medical">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="grupoSanguineo">Grupo Sanguíneo</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.GrupoSanguineo}}
-                            {{.Paciente.GrupoSanguineo}}
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.GrupoSanguineo}}</div>
                         {{else}}
                         <select id="grupoSanguineo" name="grupoSanguineo">
                             <option value="" {{if eq .Paciente.GrupoSanguineo "" }}selected{{end}}>Seleccionar</option>
@@ -302,65 +183,33 @@
                         {{end}}
                     </div>
                     <div class="form-group">
-                        <label for="numeroSeguro">Número de Seguro</label>
-                        {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.NumeroSeguro}}
-                            {{.Paciente.NumeroSeguro}}
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
-                        {{else}}
-                        <input type="text" id="numeroSeguro" name="numeroSeguro" value="{{.Paciente.NumeroSeguro}}">
-                        {{end}}
-                    </div>
-                    <div class="form-group">
                         <label for="alergias">Alergias</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.Alergias}}
-                            {{.Paciente.Alergias}}
-                            {{else}}
-                            No registradas
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.Alergias}}</div>
                         {{else}}
-                        <textarea id="alergias" name="alergias" rows="2">{{.Paciente.Alergias}}</textarea>
+                        <textarea id="alergias" name="alergias" rows="2"
+                            placeholder="Ej: Penicilina, polen, etc.">{{.Paciente.Alergias}}</textarea>
                         {{end}}
                     </div>
                     <div class="form-group">
-                        <label for="enfermedadesCronicas">Enfermedades Crónicas</label>
+                        <label for="numeroSeguro">Número de Seguro</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.EnfermedadesCronicas}}
-                            {{.Paciente.EnfermedadesCronicas}}
-                            {{else}}
-                            No registradas
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.NumeroSeguro}}</div>
                         {{else}}
-                        <textarea id="enfermedadesCronicas" name="enfermedadesCronicas"
-                            rows="2">{{.Paciente.EnfermedadesCronicas}}</textarea>
+                        <input type="text" id="numeroSeguro" name="numeroSeguro" value="{{.Paciente.NumeroSeguro}}"
+                            placeholder="Ej: 1234567890">
                         {{end}}
                     </div>
-                    <div class="form-group">
-                        <label for="medicamentosActuales">Medicamentos Actuales</label>
+                    <div class="form-group full-width">
+                        <label for="notasMedicas">Notas Médicas</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.MedicamentosActuales}}
-                            {{.Paciente.MedicamentosActuales}}
-                            {{else}}
-                            No registrados
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.NotasMedicas}}</div>
                         {{else}}
-                        <textarea id="medicamentosActuales" name="medicamentosActuales"
-                            rows="2">{{.Paciente.MedicamentosActuales}}</textarea>
+                        <textarea id="notasMedicas" name="notasMedicas" rows="3"
+                            placeholder="Notas relevantes del paciente">{{.Paciente.NotasMedicas}}</textarea>
                         {{end}}
                     </div>
                 </div>
-
                 <div class="tab-actions">
                     {{if not .ReadOnly}}
                     <button type="button" class="btn btn-secondary prev-tab" data-prev="contact">
@@ -372,59 +221,31 @@
                     {{end}}
                 </div>
             </div>
-
             <!-- Tab: Datos Antropométricos -->
             <div class="tab-pane" id="anthropometric">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="estatura">Estatura (cm)</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if gt .Paciente.Estatura 0}}
-                            {{.Paciente.Estatura}} cm
-                            {{else}}
-                            No registrada
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.Estatura}}</div>
                         {{else}}
                         <input type="number" id="estatura" name="estatura" step="0.01" value="{{.Paciente.Estatura}}"
-                            min="0" max="300">
+                            min="0" max="300" placeholder="Ej: 170">
                         {{end}}
                     </div>
                     <div class="form-group">
                         <label for="peso">Peso (kg)</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if gt .Paciente.Peso 0}}
-                            {{.Paciente.Peso}} kg
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.Peso}}</div>
                         {{else}}
                         <input type="number" id="peso" name="peso" step="0.1" value="{{.Paciente.Peso}}" min="0"
-                            max="500">
+                            max="500" placeholder="Ej: 70">
                         {{end}}
                     </div>
                     <div class="form-group">
                         <label for="imc">IMC (kg/m²)</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if gt .Paciente.IMC 0}}
-                            {{.Paciente.IMC}}
-                            {{if lt .Paciente.IMC 18.5}}
-                            <span class="badge badge-warning">Bajo peso</span>
-                            {{else if lt .Paciente.IMC 25}}
-                            <span class="badge badge-success">Normal</span>
-                            {{else if lt .Paciente.IMC 30}}
-                            <span class="badge badge-warning">Sobrepeso</span>
-                            {{else}}
-                            <span class="badge badge-danger">Obesidad</span>
-                            {{end}}
-                            {{else}}
-                            No calculado
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.IMC}}</div>
                         {{else}}
                         <input type="number" id="imc" name="imc" step="0.01" value="{{.Paciente.IMC}}" readonly>
                         <div class="form-text" id="imcResult"></div>
@@ -433,20 +254,13 @@
                     <div class="form-group">
                         <label for="circunferenciaCintura">Circunferencia de Cintura (cm)</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if gt .Paciente.CircunferenciaCintura 0}}
-                            {{.Paciente.CircunferenciaCintura}} cm
-                            {{else}}
-                            No registrada
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.CircunferenciaCintura}}</div>
                         {{else}}
                         <input type="number" id="circunferenciaCintura" name="circunferenciaCintura" step="0.1"
-                            value="{{.Paciente.CircunferenciaCintura}}" min="0">
+                            value="{{.Paciente.CircunferenciaCintura}}" min="0" placeholder="Ej: 80">
                         {{end}}
                     </div>
                 </div>
-
                 <div class="tab-actions">
                     {{if not .ReadOnly}}
                     <button type="button" class="btn btn-secondary prev-tab" data-prev="medical">
@@ -458,20 +272,13 @@
                     {{end}}
                 </div>
             </div>
-
             <!-- Tab: Estilo de Vida -->
             <div class="tab-pane" id="lifestyle">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="tabaquismo">Tabaquismo</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.Tabaquismo}}
-                            {{.Paciente.Tabaquismo}}
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.Tabaquismo}}</div>
                         {{else}}
                         <select id="tabaquismo" name="tabaquismo">
                             <option value="" {{if eq .Paciente.Tabaquismo "" }}selected{{end}}>Seleccionar</option>
@@ -489,13 +296,7 @@
                     <div class="form-group">
                         <label for="consumoAlcohol">Consumo de Alcohol</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.ConsumoAlcohol}}
-                            {{.Paciente.ConsumoAlcohol}}
-                            {{else}}
-                            No registrado
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.ConsumoAlcohol}}</div>
                         {{else}}
                         <select id="consumoAlcohol" name="consumoAlcohol">
                             <option value="" {{if eq .Paciente.ConsumoAlcohol "" }}selected{{end}}>Seleccionar</option>
@@ -513,13 +314,7 @@
                     <div class="form-group">
                         <label for="actividadFisica">Actividad Física</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.ActividadFisica}}
-                            {{.Paciente.ActividadFisica}}
-                            {{else}}
-                            No registrada
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.ActividadFisica}}</div>
                         {{else}}
                         <select id="actividadFisica" name="actividadFisica">
                             <option value="" {{if eq .Paciente.ActividadFisica "" }}selected{{end}}>Seleccionar</option>
@@ -537,20 +332,13 @@
                     <div class="form-group">
                         <label for="horasSueño">Horas de Sueño</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.HorasSueño}}
-                            {{.Paciente.HorasSueño}}
-                            {{else}}
-                            No registradas
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.HorasSueño}}</div>
                         {{else}}
                         <input type="text" id="horasSueño" name="horasSueño" value="{{.Paciente.HorasSueño}}"
                             placeholder="Ej: 7-8 horas">
                         {{end}}
                     </div>
                 </div>
-
                 <div class="tab-actions">
                     {{if not .ReadOnly}}
                     <button type="button" class="btn btn-secondary prev-tab" data-prev="anthropometric">
@@ -562,24 +350,16 @@
                     {{end}}
                 </div>
             </div>
-
-            <!-- Tab: Especialidades Médicas -->
+            <!-- Tab: Especialidades -->
             <div class="tab-pane" id="specialist">
                 <div class="form-grid">
-                    <!-- Nutrición -->
                     <div class="form-group full-width">
                         <h4><i class="fas fa-apple-alt"></i> Nutrición</h4>
                     </div>
                     <div class="form-group">
                         <label for="restriccionesDieteticas">Restricciones Dietéticas</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.RestriccionesDieteticas}}
-                            {{.Paciente.RestriccionesDieteticas}}
-                            {{else}}
-                            No registradas
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.RestriccionesDieteticas}}</div>
                         {{else}}
                         <input type="text" id="restriccionesDieteticas" name="restriccionesDieteticas"
                             value="{{.Paciente.RestriccionesDieteticas}}" placeholder="Ej: Sin gluten, sin lactosa">
@@ -588,69 +368,42 @@
                     <div class="form-group">
                         <label for="cambiosPeso">Cambios de Peso Recientes</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.CambiosPeso}}
-                            {{.Paciente.CambiosPeso}}
-                            {{else}}
-                            No registrados
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.CambiosPeso}}</div>
                         {{else}}
                         <input type="text" id="cambiosPeso" name="cambiosPeso" value="{{.Paciente.CambiosPeso}}"
                             placeholder="Ej: Pérdida de 5kg en 3 meses">
                         {{end}}
                     </div>
-
-                    <!-- Cardiología -->
                     <div class="form-group full-width">
                         <h4><i class="fas fa-heartbeat"></i> Cardiología</h4>
                     </div>
                     <div class="form-group">
                         <label for="presionArterialHabitual">Presión Arterial Habitual</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.PresionArterialHabitual}}
-                            {{.Paciente.PresionArterialHabitual}}
-                            {{else}}
-                            No registrada
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.PresionArterialHabitual}}</div>
                         {{else}}
                         <input type="text" id="presionArterialHabitual" name="presionArterialHabitual"
                             value="{{.Paciente.PresionArterialHabitual}}" placeholder="Ej: 120/80">
                         {{end}}
                     </div>
-
-                    <!-- Notas Generales -->
                     <div class="form-group full-width">
-                        <label for="notasMedicas">Notas Médicas</label>
+                        <label for="notasMedicas">Notas Médicas Generales</label>
                         {{if .ReadOnly}}
-                        <div class="readonly-value">
-                            {{if .Paciente.NotasMedicas}}
-                            {{.Paciente.NotasMedicas}}
-                            {{else}}
-                            No hay notas registradas
-                            {{end}}
-                        </div>
+                        <div class="readonly-value">{{.Paciente.NotasMedicas}}</div>
                         {{else}}
-                        <textarea id="notasMedicas" name="notasMedicas" rows="4">{{.Paciente.NotasMedicas}}</textarea>
+                        <textarea id="notasMedicas" name="notasMedicas" rows="4"
+                            placeholder="Notas generales del paciente">{{.Paciente.NotasMedicas}}</textarea>
                         {{end}}
                     </div>
                 </div>
-
                 <div class="tab-actions">
                     {{if .ReadOnly}}
-                    <div class="actions-group">
-                        <a href="/pacientes/{{.Paciente.ID}}/editar" class="btn btn-primary">
-                            <i class="fas fa-edit"></i> Editar
-                        </a>
-                        <a href="/citas/crear?paciente={{.Paciente.ID}}" class="btn btn-success">
-                            <i class="fas fa-calendar-plus"></i> Programar Cita
-                        </a>
-                        <a href="/pacientes" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Volver
-                        </a>
-                    </div>
+                    <a href="/pacientes/{{.Paciente.ID}}/editar" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Editar Paciente
+                    </a>
+                    <a href="/pacientes" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
                     {{else}}
                     <button type="button" class="btn btn-secondary prev-tab" data-prev="lifestyle">
                         <i class="fas fa-arrow-left"></i> Anterior
@@ -663,121 +416,313 @@
             </div>
         </div>
         {{if not .ReadOnly}}
-    </form>{{end}}
+    </form>
+    {{end}}
 </div>
 
 <script>
+    // ... Animaciones, tabs, feedback, edad, IMC, tooltips ...
     document.addEventListener('DOMContentLoaded', function () {
-        // Selector de tabs
+        // Tabs animados
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabPanes = document.querySelectorAll('.tab-pane');
-
         tabBtns.forEach(btn => {
             btn.addEventListener('click', function () {
                 const tab = this.getAttribute('data-tab');
-
-                // Remover clase activa de todos los botones y pestañas
                 tabBtns.forEach(b => b.classList.remove('active'));
                 tabPanes.forEach(p => p.classList.remove('active'));
-
-                // Añadir clase activa al botón y pestaña seleccionados
                 this.classList.add('active');
                 document.getElementById(tab).classList.add('active');
             });
         });
-
-        // Navegación de tabs con botones siguiente/anterior
-        const nextBtns = document.querySelectorAll('.next-tab');
-        const prevBtns = document.querySelectorAll('.prev-tab');
-
-        nextBtns.forEach(btn => {
+        // Navegación siguiente/anterior
+        document.querySelectorAll('.next-tab').forEach(btn => {
             btn.addEventListener('click', function () {
                 const nextTab = this.getAttribute('data-next');
-
-                // Simular click en el botón de la pestaña correspondiente
-                const tabBtn = document.querySelector(`.tab-btn[data-tab="${nextTab}"]`);
-                tabBtn.click();
+                document.querySelector(`.tab-btn[data-tab="${nextTab}"]`).click();
             });
         });
-
-        prevBtns.forEach(btn => {
+        document.querySelectorAll('.prev-tab').forEach(btn => {
             btn.addEventListener('click', function () {
                 const prevTab = this.getAttribute('data-prev');
-
-                // Simular click en el botón de la pestaña correspondiente
-                const tabBtn = document.querySelector(`.tab-btn[data-tab="${prevTab}"]`);
-                tabBtn.click();
+                document.querySelector(`.tab-btn[data-tab="${prevTab}"]`).click();
             });
         });
-
-        // Cálculo automático del IMC cuando se ingresan peso y estatura
+        // Edad en tiempo real
+        const fechaNac = document.getElementById('fechaNacimiento');
+        const edadPaciente = document.getElementById('edadPaciente');
+        if (fechaNac && edadPaciente) {
+            fechaNac.addEventListener('input', function () {
+                const val = this.value;
+                if (val) {
+                    const birth = new Date(val);
+                    const today = new Date();
+                    let age = today.getFullYear() - birth.getFullYear();
+                    const m = today.getMonth() - birth.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                    edadPaciente.textContent = `Edad: ${age} años`;
+                } else {
+                    edadPaciente.textContent = '';
+                }
+            });
+            if (fechaNac.value) fechaNac.dispatchEvent(new Event('input'));
+        }
+        // IMC en tiempo real
         const pesoInput = document.getElementById('peso');
         const estaturaInput = document.getElementById('estatura');
         const imcInput = document.getElementById('imc');
         const imcResultDiv = document.getElementById('imcResult');
-
         function calcularIMC() {
             if (pesoInput && estaturaInput && pesoInput.value && estaturaInput.value) {
                 const peso = parseFloat(pesoInput.value);
-                const estatura = parseFloat(estaturaInput.value) / 100; // convertir a metros
+                const estatura = parseFloat(estaturaInput.value) / 100;
                 if (peso > 0 && estatura > 0) {
                     const imc = peso / (estatura * estatura);
                     if (imcInput) imcInput.value = imc.toFixed(2);
-
-                    // Clasificación del IMC
                     let clasificacion = '';
                     let color = '';
-
-                    if (imc < 18.5) {
-                        clasificacion = 'Bajo peso';
-                        color = '#3498db';
-                    } else if (imc < 25) {
-                        clasificacion = 'Peso normal';
-                        color = '#2ecc71';
-                    } else if (imc < 30) {
-                        clasificacion = 'Sobrepeso';
-                        color = '#f39c12';
-                    } else {
-                        clasificacion = 'Obesidad';
-                        color = '#e74c3c';
-                    }
-
-                    if (imcResultDiv) {
-                        imcResultDiv.textContent = clasificacion;
-                        imcResultDiv.style.color = color;
-                    }
+                    if (imc < 18.5) { clasificacion = 'Bajo peso'; color = '#3498db'; }
+                    else if (imc < 25) { clasificacion = 'Peso normal'; color = '#2ecc71'; }
+                    else if (imc < 30) { clasificacion = 'Sobrepeso'; color = '#f39c12'; }
+                    else { clasificacion = 'Obesidad'; color = '#e74c3c'; }
+                    if (imcResultDiv) { imcResultDiv.textContent = clasificacion; imcResultDiv.style.color = color; }
                 }
             }
         }
-
         if (pesoInput && estaturaInput) {
             pesoInput.addEventListener('input', calcularIMC);
             estaturaInput.addEventListener('input', calcularIMC);
-            // Calcular IMC inicial
             calcularIMC();
         }
-
-        // Calculadora de índice cintura-cadera
-        const cinturaInput = document.getElementById('circunferenciaCintura');
-        const caderaInput = document.getElementById('circunferenciaCadera');
-        const indiceCCInput = document.getElementById('relacionCinturaCadera');
-
-        function calcularIndiceCC() {
-            if (cinturaInput && caderaInput && cinturaInput.value && caderaInput.value) {
-                const cintura = parseFloat(cinturaInput.value);
-                const cadera = parseFloat(caderaInput.value);
-                if (cintura > 0 && cadera > 0 && indiceCCInput) {
-                    const indiceCC = cintura / cadera;
-                    indiceCCInput.value = indiceCC.toFixed(2);
-                }
-            }
-        }
-
-        if (cinturaInput && caderaInput && indiceCCInput) {
-            cinturaInput.addEventListener('input', calcularIndiceCC);
-            caderaInput.addEventListener('input', calcularIndiceCC);
-            // Calcular índice inicial
-            calcularIndiceCC();
-        }
+        // Tooltips
+        document.querySelectorAll('.tooltip').forEach(function (el) {
+            el.addEventListener('mouseenter', function () {
+                el.classList.add('show');
+            });
+            el.addEventListener('mouseleave', function () {
+                el.classList.remove('show');
+            });
+        });
     });
 </script>
+<style>
+    /* Animaciones, tabs, notifiers, minimalismo, medical UI */
+    .patient-form {
+        background: var(--card-background);
+        border-radius: 16px;
+        padding: 32px 24px;
+        box-shadow: var(--card-shadow);
+        max-width: 900px;
+        margin: 32px auto;
+    }
+
+    .patient-header h2 {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .form-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+
+    .tab-btn {
+        background: none;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 8px 8px 0 0;
+        font-size: 1rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+        position: relative;
+    }
+
+    .tab-btn.active {
+        background: var(--primary-light);
+        color: var(--primary-color);
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .tab-pane {
+        display: none;
+        animation: fadeIn 0.4s;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: var(--dark-color);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 1rem;
+        background: #fff;
+        transition: border 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--primary-color);
+        outline: none;
+    }
+
+    .form-group .readonly-value {
+        background: #f7f7fa;
+        border-radius: 8px;
+        padding: 10px;
+        color: var(--text-secondary);
+    }
+
+    .tab-actions {
+        margin-top: 24px;
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 1rem;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: var(--primary-color);
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-success {
+        background: #2ecc71;
+        color: #fff;
+    }
+
+    .btn-success:hover {
+        background: #27ae60;
+    }
+
+    .notifier {
+        padding: 12px 18px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .notifier.error {
+        background: #ffeaea;
+        color: #e74c3c;
+        border: 1px solid #e74c3c33;
+    }
+
+    .notifier.success {
+        background: #eafaf1;
+        color: #27ae60;
+        border: 1px solid #27ae6033;
+    }
+
+    .tooltip {
+        cursor: pointer;
+        color: var(--primary-color);
+        position: relative;
+    }
+
+    .tooltip::after {
+        content: attr(title);
+        position: absolute;
+        left: 50%;
+        bottom: 120%;
+        transform: translateX(-50%);
+        background: #222;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.9em;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        z-index: 10;
+    }
+
+    .tooltip.show::after {
+        opacity: 1;
+    }
+
+    .animated-form {
+        animation: fadeIn 0.5s;
+    }
+
+    @media (max-width: 700px) {
+        .patient-form {
+            padding: 16px 4px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .tab-btn {
+            font-size: 0.95rem;
+            padding: 8px 8px;
+        }
+    }
+</style>
+{{end}}
