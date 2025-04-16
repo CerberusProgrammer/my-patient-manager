@@ -455,7 +455,6 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 	// Obtener los parámetros de filtrado
 	var query, gender, blood, sort, direction string
 
-	// Obtener los parámetros según el método HTTP
 	if c.Method() == "POST" {
 		query = c.FormValue("query")
 		gender = c.FormValue("filter-gender")
@@ -470,21 +469,17 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		direction = c.Query("direction")
 	}
 
-	// Limpiar espacios en blanco
 	query = strings.TrimSpace(query)
 	gender = strings.TrimSpace(gender)
 	blood = strings.TrimSpace(blood)
 	sort = strings.TrimSpace(sort)
 	direction = strings.TrimSpace(direction)
 
-	// Mostrar los parámetros recibidos en el log para depuración
 	fmt.Printf("Filtro - Query: '%s', Género: '%s', Sangre: '%s', Sort: '%s', Dir: '%s'\n",
 		query, gender, blood, sort, direction)
 
-	// Crear query base
 	db := DB.Model(&Paciente{})
 
-	// Aplicar filtros de búsqueda general
 	if query != "" {
 		searchTerm := "%" + strings.ToLower(query) + "%"
 		db = db.Where(
@@ -493,7 +488,6 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		)
 	}
 
-	// Aplicar filtros específicos
 	if gender != "" {
 		db = db.Where("genero = ?", gender)
 	}
@@ -502,7 +496,6 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		db = db.Where("grupo_sanguineo = ?", blood)
 	}
 
-	// Validar columnas ordenables
 	validColumns := map[string]bool{
 		"id":       true,
 		"nombre":   true,
@@ -511,7 +504,6 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		"telefono": true,
 	}
 
-	// Aplicar ordenación
 	if sort != "" && validColumns[sort] {
 		orderStr := sort
 		if direction == "desc" {
@@ -521,13 +513,11 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		}
 		db = db.Order(orderStr)
 	} else {
-		// Ordenación por defecto
 		db = db.Order("id ASC")
 		sort = "id"
 		direction = "asc"
 	}
 
-	// Ejecutar consulta
 	var pacientes []Paciente
 	result := db.Find(&pacientes)
 
@@ -537,8 +527,10 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		fmt.Printf("ERROR: %s\n", result.Error.Error())
 		if c.Get("HX-Request") == "true" {
 			return c.Status(fiber.StatusInternalServerError).Render("patient/patients_filter", fiber.Map{
-				"Error":     "Error al filtrar pacientes: " + result.Error.Error(),
-				"Pacientes": []Paciente{},
+				"Error":         "Error al filtrar pacientes: " + result.Error.Error(),
+				"Pacientes":     []Paciente{},
+				"SortColumn":    sort,
+				"SortDirection": direction,
 			}, "")
 		}
 		return c.Status(fiber.StatusInternalServerError).Render("patient/patients_view", fiber.Map{
@@ -548,7 +540,6 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		}, "")
 	}
 
-	// Para solicitudes HTMX, devolvemos solo la tabla parcial
 	if c.Get("HX-Request") == "true" {
 		return c.Render("patient/patients_filter", fiber.Map{
 			"Pacientes":     pacientes,
@@ -557,7 +548,6 @@ func PacientesFilterHandler(c *fiber.Ctx) error {
 		}, "")
 	}
 
-	// Para solicitudes normales, devolvemos la página completa
 	return c.Render("patient/patients_view", fiber.Map{
 		"Title":     "Búsqueda de Pacientes",
 		"Pacientes": pacientes,
