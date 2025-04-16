@@ -1,4 +1,3 @@
-{{define "embed"}}
 <div class="patient-form {{if .ReadOnly}}readonly-mode{{end}}">
     <div class="patient-header">
         <h2>
@@ -408,7 +407,7 @@
                     <button type="button" class="btn btn-secondary prev-tab" data-prev="lifestyle">
                         <i class="fas fa-arrow-left"></i> Anterior
                     </button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="button" class="btn btn-success" id="btn-crear-paciente">
                         <i class="fas fa-save"></i> {{if .IsEditing}}Guardar Cambios{{else}}Crear Paciente{{end}}
                     </button>
                     {{end}}
@@ -435,9 +434,28 @@
                 document.getElementById(tab).classList.add('active');
             });
         });
-        // Navegación siguiente/anterior
+        // Navegación siguiente/anterior con validación
         document.querySelectorAll('.next-tab').forEach(btn => {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', function (e) {
+                // Validar campos obligatorios del tab actual
+                const currentTab = this.closest('.tab-pane');
+                let valid = true;
+                let firstInvalid = null;
+                currentTab.querySelectorAll('input[required], select[required], textarea[required]').forEach(input => {
+                    if (!input.value) {
+                        valid = false;
+                        if (!firstInvalid) firstInvalid = input;
+                        input.classList.add('is-invalid');
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+                if (!valid) {
+                    e.preventDefault();
+                    if (firstInvalid) firstInvalid.focus();
+                    alert('Por favor completa todos los campos obligatorios antes de continuar.');
+                    return;
+                }
                 const nextTab = this.getAttribute('data-next');
                 document.querySelector(`.tab-btn[data-tab="${nextTab}"]`).click();
             });
@@ -448,6 +466,49 @@
                 document.querySelector(`.tab-btn[data-tab="${prevTab}"]`).click();
             });
         });
+        // Validación al guardar
+        const form = document.querySelector('form.animated-form');
+        const btnCrearPaciente = document.getElementById('btn-crear-paciente');
+        if (form && btnCrearPaciente) {
+            btnCrearPaciente.addEventListener('click', function (e) {
+                let valid = true;
+                let firstInvalid = null;
+                let firstInvalidTab = null;
+                const pacienteData = {};
+                form.querySelectorAll('input, select, textarea').forEach(input => {
+                    if (input.name) {
+                        pacienteData[input.name] = input.value;
+                    }
+                });
+                // Imprimir los datos del paciente en consola para debug
+                console.log('Datos del paciente:', JSON.stringify(pacienteData, null, 2));
+                form.querySelectorAll('input[required], select[required], textarea[required]').forEach(input => {
+                    if (!input.value) {
+                        valid = false;
+                        if (!firstInvalid) {
+                            firstInvalid = input;
+                            // Buscar el tab contenedor
+                            let tabPane = input.closest('.tab-pane');
+                            if (tabPane) firstInvalidTab = tabPane.id;
+                        }
+                        input.classList.add('is-invalid');
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+                if (!valid) {
+                    // Cambiar al tab del primer campo inválido
+                    if (firstInvalidTab) {
+                        document.querySelector(`.tab-btn[data-tab="${firstInvalidTab}"]`).click();
+                    }
+                    if (firstInvalid) firstInvalid.focus();
+                    alert('Por favor completa todos los campos obligatorios antes de guardar.');
+                    return;
+                }
+                // Si todo está bien, enviar el formulario
+                form.submit();
+            });
+        }
         // Edad en tiempo real
         const fechaNac = document.getElementById('fechaNacimiento');
         const edadPaciente = document.getElementById('edadPaciente');
@@ -725,4 +786,3 @@
         }
     }
 </style>
-{{end}}

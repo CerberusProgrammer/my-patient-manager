@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -45,21 +46,25 @@ func IndexHandler(c *fiber.Ctx) error {
 func PacientesListHandler(c *fiber.Ctx) error {
 	var pacientes []Paciente
 	result := DB.Find(&pacientes)
+	msg := c.Query("msg", "")
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).Render("patient/patients_view", fiber.Map{
-			"Title": "Lista de Pacientes",
-			"Error": "Error al obtener los pacientes: " + result.Error.Error(),
+			"Title":   "Lista de Pacientes",
+			"Error":   "Error al obtener los pacientes: " + result.Error.Error(),
+			"Message": msg,
 		})
 	}
 
 	return c.Render("patient/patients_view", fiber.Map{
 		"Title":     "Lista de Pacientes",
 		"Pacientes": pacientes,
+		"Message":   msg,
 	})
 }
 
 // PacienteCreateFormHandler muestra el formulario para crear un paciente
 func PacienteCreateFormHandler(c *fiber.Ctx) error {
+	log.Println("[PacienteCreateFormHandler] Renderizando formulario de creación de paciente")
 	return c.Render("patient/patient_create", fiber.Map{
 		"Title":     "Crear Nuevo Paciente",
 		"Paciente":  Paciente{}, // Paciente vacío
@@ -71,6 +76,13 @@ func PacienteCreateFormHandler(c *fiber.Ctx) error {
 
 // PacienteCreateHandler procesa la creación de un paciente
 func PacienteCreateHandler(c *fiber.Ctx) error {
+	log.Println("[PacienteCreateHandler] Procesando creación de paciente")
+	// Imprimir todos los datos recibidos del formulario
+	formData := make(map[string]string)
+	c.Request().PostArgs().VisitAll(func(key, value []byte) {
+		formData[string(key)] = string(value)
+	})
+	log.Printf("[DEBUG] Formulario recibido: %+v", formData)
 	// Validar campos obligatorios
 	nombre := strings.TrimSpace(c.FormValue("nombre"))
 	apellido := strings.TrimSpace(c.FormValue("apellido"))
@@ -125,6 +137,7 @@ func PacienteCreateHandler(c *fiber.Ctx) error {
 
 	// Si hay errores, mostrar el formulario con los mensajes
 	if len(errores) > 0 {
+		log.Printf("[PacienteCreateHandler] Errores de validación: %v", errores)
 		return c.Status(fiber.StatusBadRequest).Render("patient/patient_create", fiber.Map{
 			"Title": "Crear Nuevo Paciente",
 			"Error": strings.Join(errores, " "),
@@ -139,6 +152,7 @@ func PacienteCreateHandler(c *fiber.Ctx) error {
 			"ReadOnly":  false,
 			"IsEditing": false,
 			"Path":      c.Path(),
+			"Message":   "", // Limpiar mensaje de éxito
 		})
 	}
 
@@ -168,8 +182,11 @@ func PacienteCreateHandler(c *fiber.Ctx) error {
 		NotasMedicas:    c.FormValue("notasMedicas"),
 	}
 
+	log.Printf("[PacienteCreateHandler] Datos a guardar: %+v", paciente)
+
 	result := DB.Create(&paciente)
 	if result.Error != nil {
+		log.Printf("[PacienteCreateHandler] Error al crear paciente: %v", result.Error)
 		return c.Status(fiber.StatusInternalServerError).Render("patient/patient_create", fiber.Map{
 			"Title":     "Crear Nuevo Paciente",
 			"Error":     "Error al crear paciente: " + result.Error.Error(),
@@ -177,9 +194,12 @@ func PacienteCreateHandler(c *fiber.Ctx) error {
 			"ReadOnly":  false,
 			"IsEditing": false,
 			"Path":      c.Path(),
+			"Message":   "", // Limpiar mensaje de éxito
 		})
 	}
 
+	log.Printf("[PacienteCreateHandler] Paciente creado con ID: %d", paciente.ID)
+	// Redirigir con mensaje de éxito
 	return c.Redirect("/pacientes?msg=Paciente creado correctamente")
 }
 
